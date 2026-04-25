@@ -1,0 +1,5 @@
+# AI & NLP Dependencies
+PyPDF2==3.0.1              # For extracting text from PDF uploads
+sentence-transformers==2.5.1 # For generating vector embeddings locally
+chromadb           # Local vector database (Lightweight and fast)
+google.generativeai #Free AI Model That We Are Using
