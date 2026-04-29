@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>CareerLens | Explore Jobs</title>
+  
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              DEFAULT: '#0A192F',
+              light: '#112240',
+              lighter: '#233554',
+            },
+            electric: '#007BFF', 
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 123, 255, 0.5);
+      transform: translateY(-3px);
+    }
+  </style>
+</head>
+
+<body class="bg-navy text-gray-200 font-sans antialiased min-h-screen flex flex-col">
+  
+  <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        
+        <a href="{% url 'dashboard' %}" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div class="w-10 h-10 bg-electric rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+              <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            </svg>
+          </div>
+          <span class="text-2xl font-bold text-white tracking-tight">CareerLens</span>
+        </a>
+
+        <div class="hidden md:flex items-center space-x-6">
+          <span class="text-gray-300 font-medium">
+            Welcome back, <span class="text-white font-bold">{{ user.first_name|default:user.username }}</span>
+          </span>
+          <form action="{% url 'logout' %}" method="POST" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="bg-transparent border border-red-500/50 text-red-400 px-6 py-2 rounded-full font-semibold hover:bg-red-500 hover:text-white transition-all shadow-lg hover:shadow-red-500/20">
+              Log Out
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+    
+    <div class="mb-10 text-center">
+      <h1 class="text-4xl font-extrabold text-white mb-4">Find Your Next Big Opportunity</h1>
+      <p class="text-gray-400 text-lg">Search through thousands of curated tech roles.</p>
+    </div>
+
+    <div class="mb-12">
+      <div class="relative max-w-3xl mx-auto mb-6">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input type="text" id="search-input" class="block w-full pl-12 pr-4 py-4 bg-navy-light border border-white/10 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-electric focus:border-transparent transition-all" placeholder="Search by job title, skill, or company...">
+      </div>
+
+      <div id="filter-container" class="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
+        <button class="filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-electric/20 text-electric border border-electric/30" data-category="All">All</button>
+        <button class="filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-navy-light text-gray-300 border border-white/10 hover:bg-white/10" data-category="IT">IT Support</button>
+        <button class="filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-navy-light text-gray-300 border border-white/10 hover:bg-white/10" data-category="Engineering">Engineering</button>
+        <button class="filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-navy-light text-gray-300 border border-white/10 hover:bg-white/10" data-category="Development">Software Development</button>
+        <button class="filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-navy-light text-gray-300 border border-white/10 hover:bg-white/10" data-category="Management">Management</button>
+        <button class="filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-navy-light text-gray-300 border border-white/10 hover:bg-white/10" data-category="AI">Data / AI</button>
+      </div>
+    </div>
+
+    <div id="job-listings-grid" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">   
+    </div>
+
+    </div>
+  <div id="load-more-container" class="mt-12 text-center">
+      <button id="load-more-btn" class="px-8 py-4 bg-transparent border-2 border-electric text-electric rounded-2xl font-bold text-lg hover:bg-electric hover:text-white transition-all">
+        Explore More Jobs
+      </button>
+    </div>
+    </main>
+  <footer class="bg-navy py-12 border-t border-white/5 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 text-xs">
+      © 2024 CareerLens Inc. All rights reserved.
+    </div>
+  </footer>
+
+
+  <script>
+  // 1. Expanded Job Data
+  const jobsData = [
+    { company: "Google", type: "IT", title: "Software Engineer", salaryMin: 120000, salaryMax: 180000, empType: "Full-time", mode: "On-site", desc: "Develop scalable backend systems.", postedDate: "2026-04-10" },
+    { company: "Tesla", type: "Engineering", title: "Embedded Systems Engineer", salaryMin: 90000, salaryMax: 140000, empType: "Full-time", mode: "On-site", desc: "Work on firmware for automotive systems.", postedDate: "2026-04-18" },
+    { company: "OpenAI", type: "AI", title: "AI Researcher", salaryMin: 150000, salaryMax: 220000, empType: "Full-time", mode: "Remote", desc: "Research and develop advanced AI models.", postedDate: "2026-04-22" },
+    { company: "Amazon", type: "IT", title: "Cloud Engineer", salaryMin: 110000, salaryMax: 160000, empType: "Full-time", mode: "Remote", desc: "Manage AWS infrastructure and deployments.", postedDate: "2026-04-05" },
+    { company: "Microsoft", type: "Development", title: "Frontend Developer", salaryMin: 80000, salaryMax: 120000, empType: "Full-time", mode: "Hybrid", desc: "Build responsive UI using React.", postedDate: "2026-04-12" },
+    { company: "Meta", type: "AI", title: "Data Scientist", salaryMin: 130000, salaryMax: 190000, empType: "Full-time", mode: "Remote", desc: "Analyze large datasets for insights.", postedDate: "2026-04-25" },
+    { company: "IBM", type: "Management", title: "Project Manager", salaryMin: 70000, salaryMax: 110000, empType: "Full-time", mode: "On-site", desc: "Lead cross-functional teams.", postedDate: "2026-04-01" },
+    { company: "Intel", type: "Engineering", title: "Hardware Engineer", salaryMin: 95000, salaryMax: 150000, empType: "Full-time", mode: "On-site", desc: "Design and test semiconductor components.", postedDate: "2026-04-15" },
+    { company: "Netflix", type: "IT", title: "Backend Developer", salaryMin: 115000, salaryMax: 170000, empType: "Full-time", mode: "Remote", desc: "Build high-performance APIs.", postedDate: "2026-04-20" },
+    { company: "Spotify", type: "Development", title: "Mobile App Developer", salaryMin: 85000, salaryMax: 130000, empType: "Full-time", mode: "Remote", desc: "Develop Android/iOS music applications.", postedDate: "2026-04-08" },
+    { company: "NVIDIA", type: "AI", title: "Deep Learning Engineer", salaryMin: 140000, salaryMax: 210000, empType: "Full-time", mode: "On-site", desc: "Optimize neural networks for GPUs.", postedDate: "2026-04-27" },
+    { company: "Adobe", type: "IT", title: "DevOps Engineer", salaryMin: 100000, salaryMax: 150000, empType: "Full-time", mode: "Hybrid", desc: "Automate CI/CD pipelines.", postedDate: "2026-04-14" },
+    { company: "Oracle", type: "Management", title: "Product Manager", salaryMin: 90000, salaryMax: 140000, empType: "Full-time", mode: "On-site", desc: "Define product strategy and roadmap.", postedDate: "2026-04-03" },
+    { company: "SAP", type: "Development", title: "Full Stack Developer", salaryMin: 95000, salaryMax: 145000, empType: "Full-time", mode: "Hybrid", desc: "Work on enterprise web applications.", postedDate: "2026-04-17" },
+    { company: "SpaceX", type: "Engineering", title: "Aerospace Engineer", salaryMin: 120000, salaryMax: 200000, empType: "Full-time", mode: "On-site", desc: "Design and test spacecraft systems.", postedDate: "2026-04-23" },
+    { company: "Apple", type: "Engineering", title: "iOS Systems Architect", salaryMin: 160000, salaryMax: 240000, empType: "Full-time", mode: "On-site", desc: "Architect core iOS frameworks.", postedDate: "2026-04-26" },
+    { company: "Stripe", type: "Development", title: "Payments Integration Engineer", salaryMin: 130000, salaryMax: 180000, empType: "Full-time", mode: "Remote", desc: "Build robust API endpoints for financial transactions.", postedDate: "2026-04-24" },
+    { company: "Airbnb", type: "Management", title: "Engineering Manager", salaryMin: 150000, salaryMax: 210000, empType: "Full-time", mode: "Hybrid", desc: "Lead the guest experience technical team.", postedDate: "2026-04-19" },
+    { company: "Uber", type: "AI", title: "Machine Learning Engineer", salaryMin: 140000, salaryMax: 200000, empType: "Full-time", mode: "Hybrid", desc: "Optimize routing and pricing algorithms.", postedDate: "2026-04-21" },
+    { company: "LinkedIn", type: "Development", title: "Backend Systems Engineer", salaryMin: 125000, salaryMax: 175000, empType: "Full-time", mode: "Remote", desc: "Scale our real-time messaging architecture.", postedDate: "2026-04-16" },
+    { company: "ByteDance", type: "AI", title: "Computer Vision Researcher", salaryMin: 155000, salaryMax: 230000, empType: "Full-time", mode: "On-site", desc: "Develop cutting-edge video processing models.", postedDate: "2026-04-27" },
+    { company: "Slack", type: "IT", title: "Site Reliability Engineer", salaryMin: 110000, salaryMax: 165000, empType: "Full-time", mode: "Remote", desc: "Ensure 99.99% uptime for global communications.", postedDate: "2026-04-13" },
+    { company: "Dropbox", type: "Development", title: "Security Engineer", salaryMin: 135000, salaryMax: 190000, empType: "Full-time", mode: "Remote", desc: "Audit and secure cloud storage infrastructure.", postedDate: "2026-04-11" },
+    { company: "Salesforce", type: "Management", title: "Technical Product Manager", salaryMin: 115000, salaryMax: 160000, empType: "Full-time", mode: "Hybrid", desc: "Drive CRM product innovations.", postedDate: "2026-04-09" },
+    { company: "Palantir", type: "Engineering", title: "Forward Deployed Engineer", salaryMin: 140000, salaryMax: 195000, empType: "Full-time", mode: "On-site", desc: "Deploy data solutions in complex client environments.", postedDate: "2026-04-22" }
+  ];
+
+  // 2. Global State Variables
+  let currentlyDisplayed = 9;
+  const jobsToLoad = 9;
+  let currentSearchQuery = "";
+  let currentCategory = "All";
+
+  // 3. Helper Functions
+  function calculateDaysAgo(dateString) {
+    const postedDate = new Date(dateString);
+    const today = new Date(); 
+    const timeDifference = today - postedDate;
+    const daysAgo = Math.floor(timeDifference / (1000 * 3600 * 24));
+    
+    if (daysAgo <= 0) return "Posted today";
+    if (daysAgo === 1) return "Posted 1 day ago";
+    return `Posted ${daysAgo} days ago`;
+  }
+
+  function formatSalary(num) {
+    return `$${Math.floor(num / 1000)}k`;
+  }
+
+  // 4. The Master Render & Filter Function
+  function filterAndRenderJobs() {
+    const gridContainer = document.getElementById('job-listings-grid');
+    const loadMoreContainer = document.getElementById('load-more-container');
+    gridContainer.innerHTML = ''; 
+
+    // Step A: Filter the data based on Search AND Category
+    const filteredJobs = jobsData.filter(job => {
+      // Check Category Match
+      const matchesCategory = currentCategory === "All" || job.type === currentCategory;
+      
+      // Check Search Match (Checks Title, Company, and Description)
+      const searchLower = currentSearchQuery.toLowerCase();
+      const matchesSearch = 
+        job.title.toLowerCase().includes(searchLower) || 
+        job.company.toLowerCase().includes(searchLower) ||
+        job.desc.toLowerCase().includes(searchLower);
+
+      return matchesCategory && matchesSearch;
+    });
+
+    // Step B: Slice for Pagination
+    const jobsToRender = filteredJobs.slice(0, currentlyDisplayed);
+
+    // Step C: Render HTML
+    if (jobsToRender.length === 0) {
+      gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">No jobs found matching your criteria.</div>`;
+    } else {
+      jobsToRender.forEach(job => {
+        const companyInitials = job.company.substring(0, 2).toUpperCase();
+        const timeAgoText = calculateDaysAgo(job.postedDate);
+        const salaryText = `${formatSalary(job.salaryMin)} - ${formatSalary(job.salaryMax)}`;
+
+        const cardHTML = `
+          <div class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <span class="text-sm font-semibold text-gray-400 uppercase tracking-wider">${job.company}</span>
+                <h3 class="text-xl font-bold text-white mt-1">${job.title}</h3>
+              </div>
+              <div class="w-12 h-12 rounded-lg bg-navy-lighter flex items-center justify-center border border-white/5 flex-shrink-0">
+                <span class="text-electric font-bold text-lg">${companyInitials}</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mb-4 text-xs font-medium">
+              <span class="px-3 py-1 rounded-md bg-green-500/10 text-green-400 border border-green-500/20">${salaryText}</span>
+              <span class="px-3 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10">${job.empType}</span>
+              <span class="px-3 py-1 rounded-md bg-white/5 text-gray-300 border border-white/10">${job.mode}</span>
+            </div>
+
+            <p class="text-sm text-gray-400 mb-8 line-clamp-3">${job.desc}</p>
+
+            <div class="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
+              <span class="text-xs text-gray-500">${timeAgoText}</span>
+              <a href="https://pk.indeed.com/" class="px-6 py-2 bg-electric text-white font-bold rounded-lg hover:bg-blue-600 transition-colors">Apply Now</a>
+            </div>
+          </div>
+        `;
+        gridContainer.insertAdjacentHTML('beforeend', cardHTML);
+      });
+    }
+
+    // Step D: Handle "Load More" Button Visibility
+    if (currentlyDisplayed >= filteredJobs.length) {
+      loadMoreContainer.style.display = 'none';
+    } else {
+      loadMoreContainer.style.display = 'block';
+    }
+  }
+
+  // 5. Event Listeners for Interaction
+  
+  // A. Search Bar Listener
+  document.getElementById('search-input').addEventListener('input', (e) => {
+    currentSearchQuery = e.target.value;
+    currentlyDisplayed = 9; // Reset pagination on new search
+    filterAndRenderJobs();
+  });
+
+  // B. Category Pills Listener
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      // Reset visual styles on all buttons to inactive
+      filterButtons.forEach(b => {
+        b.className = "filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-navy-light text-gray-300 border border-white/10 hover:bg-white/10";
+      });
+      
+      // Apply active visual style to the clicked button
+      const clickedBtn = e.target;
+      clickedBtn.className = "filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-electric/20 text-electric border border-electric/30";
+      
+      // Update state and render
+      currentCategory = clickedBtn.getAttribute('data-category');
+      currentlyDisplayed = 9; // Reset pagination on new filter
+      filterAndRenderJobs();
+    });
+  });
+
+  // C. Load More Button Listener
+  document.getElementById('load-more-btn').addEventListener('click', () => {
+    currentlyDisplayed += jobsToLoad;
+    filterAndRenderJobs();
+  });
+
+  // 6. Execute initial render on page load
+  document.addEventListener('DOMContentLoaded', filterAndRenderJobs);
+</script>
+
+  </body>
+</html>

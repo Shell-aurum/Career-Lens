@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CareerLens - Login &amp; Sign Up</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<style>
+  * { font-family: "Public Sans", sans-serif; box-sizing: border-box; }
+  body { margin:0; padding:0; min-height:100vh; background:#fff; display:flex; }
+  /* ── Left panel ── */
+  .left-panel {
+    width: 45%;
+    min-height: 100vh;
+    background: linear-gradient(150deg, #1c1c2e 0%, #16213e 45%, #1e1008 100%);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4rem 5rem 3rem;
+    flex-shrink: 0;
+  }
+  .left-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 65% 35%, rgba(236,91,19,0.2) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .glass-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+  /* ── Right panel ── */
+  .right-panel {
+    flex: 1;
+    background: #f0eeee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+  }
+  .form-wrap { width: 100%; max-width: 400px; }
+  /* ── Tabs ── */
+  .tab-bar { display:flex; background:#e0dede; border-radius:0.55rem; padding:4px; margin-bottom:1.5rem; }
+  .tab-btn {
+    flex: 1; border: none; border-radius: 0.4rem; padding: 0.55rem 0;
+    font-size: 0.83rem; cursor: pointer; transition: all 0.15s; font-family: inherit;
+  }
+  .tab-active   { background:#fff; color:#1e293b; font-weight:700; box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+  .tab-inactive { background:transparent; color:#94a3b8; font-weight:600; }
+  /* ── Inputs ── */
+  .input-wrap { position: relative; }
+  .input-icon { position:absolute; left:0.85rem; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:0.85rem; pointer-events:none; }
+  .field {
+    width:100%; padding:0.78rem 1rem 0.78rem 2.5rem;
+    border:1.5px solid #e2e8f0; border-radius:0.5rem;
+    background:#fff; font-size:0.85rem; color:#1e293b;
+    outline:none; transition:border-color 0.15s, box-shadow 0.15s;
+    font-family: inherit;
+  }
+  .field:focus { border-color:#007BFF; box-shadow:0 0 0 3px rgba(236,91,19,0.1); }
+  .field::placeholder { color:#b0bac6; }
+  .field-pr { padding-right: 2.5rem; }
+  /* ── Labels ── */
+  .field-label { font-size:0.78rem; font-weight:600; color:#374151; display:block; margin-bottom:0.38rem; }
+  /* ── CTA ── */
+  .btn-primary {
+    width:100%; background:#007BFF; color:#fff; font-weight:700;
+    font-size:0.9rem; padding:0.82rem; border:none; border-radius:0.5rem;
+    cursor:pointer; transition:background 0.15s, transform 0.1s; font-family:inherit;
+    letter-spacing:0.01em;
+  }
+  .btn-primary:hover  { background:#154981; }
+  .btn-primary:active { transform:scale(0.985); }
+  /* ── Social ── */
+  .social-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; }
+  .btn-social {
+    display:flex; align-items:center; justify-content:center; gap:0.5rem;
+    border:1.5px solid #e2e8f0; border-radius:0.5rem; padding:0.62rem;
+    background:#fff; font-size:0.82rem; font-weight:700; color:#334155;
+    cursor:pointer; transition:background 0.15s; font-family:inherit;
+  }
+  .btn-social:hover { background:#f8fafc; }
+  /* ── Divider ── */
+  .divider { display:flex; align-items:center; gap:0.7rem; margin:1.1rem 0; }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:#e2e8f0; }
+  .divider span { font-size:0.68rem; font-weight:600; color:#94a3b8; letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap; }
+  /* ── pw toggle ── */
+  .pw-toggle { position:absolute; right:0.85rem; top:50%; transform:translateY(-50%); color:#94a3b8; cursor:pointer; font-size:0.85rem; }
+  .pw-toggle:hover { color:#64748b; }
+  /* ── Role cards ── */
+  .role-card {
+    display:flex; align-items:center; gap:0.55rem;
+    border:1.5px solid #e2e8f0; border-radius:0.5rem; padding:0.65rem 0.8rem;
+    background:#fff; cursor:pointer; transition:border-color 0.15s, background 0.15s;
+  }
+  .role-card:has(input:checked) { border-color:#007BFF; background:#fff8f5; }
+  .role-card input[type=radio] { accent-color:#007BFF; width:14px; height:14px; cursor:pointer; flex-shrink:0; }
+  /* ── checkbox ── */
+  input[type=checkbox] { accent-color:#007BFF; }
+  /* ── form gap ── */
+  .form-fields { display:flex; flex-direction:column; gap:0.9rem; }
+  /* ── hidden ── */
+  .hidden-panel { display:none; }
+  /* ── link-style btn ── */
+  .link-btn { background:none; border:none; color:#007BFF; font-weight:600; font-size:0.78rem; cursor:pointer; padding:0; font-family:inherit; }
+  .link-btn:hover { text-decoration:underline; }
+  /* ── outer card ── */
+  .card { width: 100vw; height: 100vh; display: flex; overflow: hidden; }
+</style>
+</head>
+<body>
+<div class="card">
+<div class="left-panel">
+  <div style="position:relative;z-index:2;">
+    <div style="display:flex;align-items:center;gap:0.65rem;margin-bottom:2.4rem;">
+      <div style="background:#007BFF;width:38px;height:38px;border-radius:0.55rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <i class="fa-solid fa-chart-line" style="color:#fff;font-size:1rem;"></i>
+      </div>
+      <span style="color:#fff;font-weight:700;font-size:1.1rem;">CareerLens</span>
+    </div>
+    <h1 style="color:#fff;font-size:2.4rem;font-weight:900;line-height:1.15;margin:0 0 0.85rem;">
+      Welcome to<br/><span style="color:#007BFF;">CareerLens</span>
+    </h1>
+    <p style="color:#94a3b8;font-size:0.875rem;line-height:1.65;max-width:270px;margin:0 0 2rem;">
+      Your AI-powered career companion. Navigate your professional journey with data-driven insights.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;max-width:310px;">
+      <div class="glass-card">
+        <i class="fa-solid fa-arrow-trend-up" style="color:#007BFF;font-size:0.95rem;margin-bottom:0.35rem;display:block;"></i>
+        <div style="color:#fff;font-weight:700;font-size:0.78rem;margin-bottom:0.2rem;">Growth Tracking</div>
+        <div style="color:#64748b;font-size:0.7rem;line-height:1.4;">Monitor your career trajectory in real-time.</div>
+      </div>
+      <div class="glass-card">
+        <i class="fa-solid fa-brain" style="color:#007BFF;font-size:0.95rem;margin-bottom:0.35rem;display:block;"></i>
+        <div style="color:#fff;font-weight:700;font-size:0.78rem;margin-bottom:0.2rem;">AI Insights</div>
+        <div style="color:#64748b;font-size:0.7rem;line-height:1.4;">Personalized recommendations for your skill set.</div>
+      </div>
+    </div>
+  </div>
+  <p style="color:#475569;font-size:0.7rem;position:relative;z-index:2;margin:0;">© 2024 CareerLens Inc. All rights reserved.</p>
+</div>
+
+<div class="right-panel">
+  <div class="form-wrap">
+    <h2 style="font-size:1.55rem;font-weight:800;color:#1e293b;margin:0 0 0.2rem;">Get Started</h2>
+    <p style="color:#94a3b8;font-size:0.83rem;margin:0 0 1.4rem;">Sign in to your account or create a new one.</p>
+    
+    <div class="tab-bar">
+      <button class="tab-btn tab-active" id="tab-login" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn tab-inactive" id="tab-signup" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <div id="form-login">
+      <form action="{% url 'login' %}" method="POST">
+        {% csrf_token %}
+        {% if error_message %}
+          <div style="color: red; font-size: 0.8rem; text-align: center; margin-bottom: 0.5rem;">{{ error_message }}</div>
+        {% endif %}
+        
+        <div>
+          <label class="field-label">Email Address</label>
+          <div class="input-wrap">
+            <i class="fa-regular fa-envelope input-icon"></i>
+            <input class="field" name="email" placeholder="name@company.com" type="email" required/>
+          </div>
+        </div>
+        
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.38rem;">
+            <label class="field-label" style="margin:0;">Password</label>
+            <a href="#" style="font-size:0.75rem;font-weight:600;color:#007BFF;text-decoration:none;">Forgot Password?</a>
+          </div>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input class="field field-pr" name="password" id="lpw" placeholder="••••••••" type="password" required/>
+            <i class="fa-regular fa-eye pw-toggle" id="lpw-i" onclick="togglePw('lpw','lpw-i')"></i>
+          </div>
+        </div>
+        
+        <div style="display:flex;align-items:center;gap:0.45rem;">
+          <input id="remember" name="remember" style="width:14px;height:14px;" type="checkbox"/>
+          <label for="remember" style="font-size:0.8rem;color:#64748b;cursor:pointer;">Keep me logged in</label>
+        </div>
+        
+        <button class="btn-primary" type="submit">Sign In</button>
+      </form>
+      
+      <div class="divider"><span>OR CONTINUE WITH</span></div>
+      <div class="social-grid">
+        <button class="btn-social"><i class="fa-brands fa-google" style="color:#208cff;font-size:1rem;"></i> Google</button>
+        <button class="btn-social"><i class="fa-brands fa-linkedin" style="color:#0077b5;font-size:1rem;"></i> LinkedIn</button>
+      </div>
+      <p style="margin-top:1.1rem;font-size:0.77rem;color:#94a3b8;text-align:center;line-height:1.5;">
+        Don't have an account?
+        <button class="link-btn" onclick="switchTab('signup')">Sign up</button>
+      </p>
+    </div>
+
+    <div class="hidden-panel" id="form-signup">
+      <form class="form-fields" action="{% url 'signup' %}" method="POST">
+        {% csrf_token %} 
+        
+        <div>
+          <label class="field-label">Full Name</label>
+          <div class="input-wrap">
+            <i class="fa-regular fa-user input-icon"></i>
+            <input class="field" name="full_name" placeholder="Jane Doe" type="text" required/>
+          </div>
+        </div>
+        
+        <div>
+          <label class="field-label">Email Address</label>
+          <div class="input-wrap">
+            <i class="fa-regular fa-envelope input-icon"></i>
+            <input class="field" name="email" placeholder="name@company.com" type="email" required/>
+          </div>
+        </div>
+        
+        <div>
+          <label class="field-label">Password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input class="field field-pr" name="password" id="spw" placeholder="Min. 8 characters" type="password" required/>
+            <i class="fa-regular fa-eye pw-toggle" id="spw-i" onclick="togglePw('spw','spw-i')"></i>
+          </div>
+        </div>
+        
+        <div>
+          <label class="field-label">I am a…</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+            <label class="role-card">
+              <input checked="" name="role" type="radio" value="job_seeker" onchange="toggleCompanyField()"/>
+              <i class="fa-solid fa-briefcase" style="color:#003e81;font-size:0.85rem;flex-shrink:0;"></i>
+              <div>
+                <div style="font-size:0.78rem;font-weight:700;color:#1e293b;line-height:1.2;">Job Seeker</div>
+              </div>
+            </label>
+            <label class="role-card">
+              <input name="role" type="radio" value="recruiter" onchange="toggleCompanyField()"/>
+              <i class="fa-solid fa-users" style="color:#003e81;font-size:0.85rem;flex-shrink:0;"></i>
+              <div>
+                <div style="font-size:0.78rem;font-weight:700;color:#1e293b;line-height:1.2;">Recruiter</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div id="company-field-container" style="display: none;">
+          <label class="field-label">Company Name</label>
+          <div class="input-wrap">
+            <i class="fa-regular fa-building input-icon"></i>
+            <input class="field" id="company_name" name="company_name" placeholder="Tech Innovations Inc." type="text"/>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:0.45rem;">
+          <input id="terms" style="width:14px;height:14px;margin-top:2px;" type="checkbox" required/>
+          <label for="terms" style="font-size:0.77rem;color:#64748b;cursor:pointer;line-height:1.4;">
+            I agree to the <a href="#" style="color:#007BFF;font-weight:600;text-decoration:none;">Terms of Service</a> and <a href="#" style="color:#007BFF;font-weight:600;text-decoration:none;">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button class="btn-primary" type="submit">Create Account</button>
+      </form>
+
+      <div class="divider"><span>OR SIGN UP WITH</span></div>
+      <div class="social-grid">
+        <button class="btn-social"><i class="fa-brands fa-google" style="color:#007BFF;font-size:1rem;"></i> Google</button>
+        <button class="btn-social"><i class="fa-brands fa-linkedin" style="color:#0077b5;font-size:1rem;"></i> LinkedIn</button>
+      </div>
+      <p style="margin-top:1rem;font-size:0.77rem;color:#94a3b8;text-align:center;">
+        Already have an account?
+        <button class="link-btn" onclick="switchTab('login')">Sign in</button>
+      </p>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+  // Handles switching between Login and Sign Up tabs
+  function switchTab(tab) {
+    const lf = document.getElementById('form-login');
+    const sf = document.getElementById('form-signup');
+    const tl = document.getElementById('tab-login');
+    const ts = document.getElementById('tab-signup');
+    if (tab === 'login') {
+      lf.classList.remove('hidden-panel');
+      sf.classList.add('hidden-panel');
+      tl.className = 'tab-btn tab-active';
+      ts.className = 'tab-btn tab-inactive';
+    } else {
+      sf.classList.remove('hidden-panel');
+      lf.classList.add('hidden-panel');
+      ts.className = 'tab-btn tab-active';
+      tl.className = 'tab-btn tab-inactive';
+    }
+  }
+
+  // Handles hiding/showing password text
+  function togglePw(inputId, iconId) {
+    const inp = document.getElementById(inputId);
+    const ico = document.getElementById(iconId);
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      ico.classList.replace('fa-eye','fa-eye-slash');
+    } else {
+      inp.type = 'password';
+      ico.classList.replace('fa-eye-slash','fa-eye');
+    }
+  }
+
+  // Handles showing/hiding the Company Name field for recruiters
+  function toggleCompanyField() {
+    const roleRadios = document.getElementsByName('role');
+    const companyContainer = document.getElementById('company-field-container');
+    const companyInput = document.getElementById('company_name');
+    
+    let isRecruiter = false;
+    for (const radio of roleRadios) {
+        if (radio.checked && radio.value === 'recruiter') {
+            isRecruiter = true;
+            break;
+        }
+    }
+    
+    if (isRecruiter) {
+        companyContainer.style.display = 'block';
+        companyInput.required = true;
+    } else {
+        companyContainer.style.display = 'none';
+        companyInput.required = false;
+    }
+  }
+</script>
+</body>
+</html>
