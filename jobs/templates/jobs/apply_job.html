@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerLens | Apply to {{ job.company_name }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { navy: { DEFAULT: '#0A192F', light: '#112240', lighter: '#233554' }, electric: '#007BFF' }, fontFamily: { sans: ['Inter', 'sans-serif'] } } }
+    }
+  </script>
+</head>
+<body class="bg-navy text-gray-200 font-sans antialiased min-h-screen flex flex-col">
+
+  <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 bg-electric rounded-xl flex items-center justify-center">
+          <span class="font-bold text-white text-xl">C</span>
+        </div>
+        <span class="text-2xl font-bold text-white tracking-tight">CareerLens</span>
+      </div>
+      <a href="{% url 'explore' %}" class="text-sm font-semibold text-gray-400 hover:text-white">&larr; Back to Jobs</a>
+    </div>
+  </nav>
+
+  <main class="flex-grow flex items-center justify-center px-4 py-12">
+    <div class="max-w-3xl w-full">
+      
+      <div class="bg-white/5 border border-white/10 rounded-t-3xl p-8 backdrop-blur-md">
+        <span class="text-electric font-bold text-sm tracking-widest uppercase">{{ job.company_name }}</span>
+        <h1 class="text-3xl font-extrabold text-white mt-2 mb-4">{{ job.title }}</h1>
+        <div class="flex gap-3 text-sm font-medium">
+            <span class="px-3 py-1 rounded-md bg-white/10 text-gray-300">{{ job.work_mode }}</span>
+            <span class="px-3 py-1 rounded-md bg-white/10 text-gray-300">{{ job.employment_type }}</span>
+        </div>
+      </div>
+
+      <form method="POST" class="bg-navy-light border border-white/5 rounded-b-3xl p-8 shadow-2xl">
+        {% csrf_token %}
+        <div class="space-y-6">
+            <div>
+                <label class="block text-sm font-bold text-gray-400 mb-2">Full Name</label>
+                <input type="text" value="{{ user.first_name }} {{ user.last_name }}" class="w-full bg-navy border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-electric focus:border-electric" readonly>
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-400 mb-2">Email Address</label>
+                <input type="email" value="{{ user.email }}" class="w-full bg-navy border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-electric focus:border-electric" readonly>
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-400 mb-2">Pitch / Cover Letter</label>
+                <textarea name="cover_letter" rows="4" class="w-full bg-navy border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-electric focus:border-electric placeholder-gray-600" placeholder="Why are you a perfect match for this role?"></textarea>
+            </div>
+        </div>
+        <button type="submit" class="w-full mt-8 py-4 bg-electric text-white font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg shadow-electric/25">
+            Submit Application
+        </button>
+      </form>
+
+    </div>
+  </main>
+</body>
+</html>

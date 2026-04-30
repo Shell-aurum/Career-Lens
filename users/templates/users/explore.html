@@ -121,43 +121,16 @@
 
 
   <script>
-  // 1. Expanded Job Data
-  const jobsData = [
-    { company: "Google", type: "IT", title: "Software Engineer", salaryMin: 120000, salaryMax: 180000, empType: "Full-time", mode: "On-site", desc: "Develop scalable backend systems.", postedDate: "2026-04-10" },
-    { company: "Tesla", type: "Engineering", title: "Embedded Systems Engineer", salaryMin: 90000, salaryMax: 140000, empType: "Full-time", mode: "On-site", desc: "Work on firmware for automotive systems.", postedDate: "2026-04-18" },
-    { company: "OpenAI", type: "AI", title: "AI Researcher", salaryMin: 150000, salaryMax: 220000, empType: "Full-time", mode: "Remote", desc: "Research and develop advanced AI models.", postedDate: "2026-04-22" },
-    { company: "Amazon", type: "IT", title: "Cloud Engineer", salaryMin: 110000, salaryMax: 160000, empType: "Full-time", mode: "Remote", desc: "Manage AWS infrastructure and deployments.", postedDate: "2026-04-05" },
-    { company: "Microsoft", type: "Development", title: "Frontend Developer", salaryMin: 80000, salaryMax: 120000, empType: "Full-time", mode: "Hybrid", desc: "Build responsive UI using React.", postedDate: "2026-04-12" },
-    { company: "Meta", type: "AI", title: "Data Scientist", salaryMin: 130000, salaryMax: 190000, empType: "Full-time", mode: "Remote", desc: "Analyze large datasets for insights.", postedDate: "2026-04-25" },
-    { company: "IBM", type: "Management", title: "Project Manager", salaryMin: 70000, salaryMax: 110000, empType: "Full-time", mode: "On-site", desc: "Lead cross-functional teams.", postedDate: "2026-04-01" },
-    { company: "Intel", type: "Engineering", title: "Hardware Engineer", salaryMin: 95000, salaryMax: 150000, empType: "Full-time", mode: "On-site", desc: "Design and test semiconductor components.", postedDate: "2026-04-15" },
-    { company: "Netflix", type: "IT", title: "Backend Developer", salaryMin: 115000, salaryMax: 170000, empType: "Full-time", mode: "Remote", desc: "Build high-performance APIs.", postedDate: "2026-04-20" },
-    { company: "Spotify", type: "Development", title: "Mobile App Developer", salaryMin: 85000, salaryMax: 130000, empType: "Full-time", mode: "Remote", desc: "Develop Android/iOS music applications.", postedDate: "2026-04-08" },
-    { company: "NVIDIA", type: "AI", title: "Deep Learning Engineer", salaryMin: 140000, salaryMax: 210000, empType: "Full-time", mode: "On-site", desc: "Optimize neural networks for GPUs.", postedDate: "2026-04-27" },
-    { company: "Adobe", type: "IT", title: "DevOps Engineer", salaryMin: 100000, salaryMax: 150000, empType: "Full-time", mode: "Hybrid", desc: "Automate CI/CD pipelines.", postedDate: "2026-04-14" },
-    { company: "Oracle", type: "Management", title: "Product Manager", salaryMin: 90000, salaryMax: 140000, empType: "Full-time", mode: "On-site", desc: "Define product strategy and roadmap.", postedDate: "2026-04-03" },
-    { company: "SAP", type: "Development", title: "Full Stack Developer", salaryMin: 95000, salaryMax: 145000, empType: "Full-time", mode: "Hybrid", desc: "Work on enterprise web applications.", postedDate: "2026-04-17" },
-    { company: "SpaceX", type: "Engineering", title: "Aerospace Engineer", salaryMin: 120000, salaryMax: 200000, empType: "Full-time", mode: "On-site", desc: "Design and test spacecraft systems.", postedDate: "2026-04-23" },
-    { company: "Apple", type: "Engineering", title: "iOS Systems Architect", salaryMin: 160000, salaryMax: 240000, empType: "Full-time", mode: "On-site", desc: "Architect core iOS frameworks.", postedDate: "2026-04-26" },
-    { company: "Stripe", type: "Development", title: "Payments Integration Engineer", salaryMin: 130000, salaryMax: 180000, empType: "Full-time", mode: "Remote", desc: "Build robust API endpoints for financial transactions.", postedDate: "2026-04-24" },
-    { company: "Airbnb", type: "Management", title: "Engineering Manager", salaryMin: 150000, salaryMax: 210000, empType: "Full-time", mode: "Hybrid", desc: "Lead the guest experience technical team.", postedDate: "2026-04-19" },
-    { company: "Uber", type: "AI", title: "Machine Learning Engineer", salaryMin: 140000, salaryMax: 200000, empType: "Full-time", mode: "Hybrid", desc: "Optimize routing and pricing algorithms.", postedDate: "2026-04-21" },
-    { company: "LinkedIn", type: "Development", title: "Backend Systems Engineer", salaryMin: 125000, salaryMax: 175000, empType: "Full-time", mode: "Remote", desc: "Scale our real-time messaging architecture.", postedDate: "2026-04-16" },
-    { company: "ByteDance", type: "AI", title: "Computer Vision Researcher", salaryMin: 155000, salaryMax: 230000, empType: "Full-time", mode: "On-site", desc: "Develop cutting-edge video processing models.", postedDate: "2026-04-27" },
-    { company: "Slack", type: "IT", title: "Site Reliability Engineer", salaryMin: 110000, salaryMax: 165000, empType: "Full-time", mode: "Remote", desc: "Ensure 99.99% uptime for global communications.", postedDate: "2026-04-13" },
-    { company: "Dropbox", type: "Development", title: "Security Engineer", salaryMin: 135000, salaryMax: 190000, empType: "Full-time", mode: "Remote", desc: "Audit and secure cloud storage infrastructure.", postedDate: "2026-04-11" },
-    { company: "Salesforce", type: "Management", title: "Technical Product Manager", salaryMin: 115000, salaryMax: 160000, empType: "Full-time", mode: "Hybrid", desc: "Drive CRM product innovations.", postedDate: "2026-04-09" },
-    { company: "Palantir", type: "Engineering", title: "Forward Deployed Engineer", salaryMin: 140000, salaryMax: 195000, empType: "Full-time", mode: "On-site", desc: "Deploy data solutions in complex client environments.", postedDate: "2026-04-22" }
-  ];
-
-  // 2. Global State Variables
+  // 1. Global State Variables
+  let jobsData = []; // Starts empty, fills via your Django DB
   let currentlyDisplayed = 9;
   const jobsToLoad = 9;
   let currentSearchQuery = "";
   let currentCategory = "All";
 
-  // 3. Helper Functions
+  // 2. Helper Functions
   function calculateDaysAgo(dateString) {
+    if (dateString === "----") return "Recently";
     const postedDate = new Date(dateString);
     const today = new Date(); 
     const timeDifference = today - postedDate;
@@ -169,7 +142,31 @@
   }
 
   function formatSalary(num) {
+    if (num === "----") return "Undisclosed Salary";
     return `$${Math.floor(num / 1000)}k`;
+  }
+
+  // 3. Fetch Data from Django Database
+  async function fetchJobsFromDatabase() {
+    const gridContainer = document.getElementById('job-listings-grid');
+    gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">Loading live jobs from database...</div>`;
+    
+    try {
+      // Hit the new internal API endpoint you just built
+      const response = await fetch('/jobs/api/all/');
+      const data = await response.json();
+      
+      if (response.ok) {
+        jobsData = data.jobs || [];
+        filterAndRenderJobs();
+      } else {
+        throw new Error(data.error || 'Failed to fetch jobs');
+      }
+
+    } catch (error) {
+      console.error("Database Error:", error.message);
+      gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-red-400 font-bold">Failed to connect to the database.</div>`;
+    }
   }
 
   // 4. The Master Render & Filter Function
@@ -178,12 +175,9 @@
     const loadMoreContainer = document.getElementById('load-more-container');
     gridContainer.innerHTML = ''; 
 
-    // Step A: Filter the data based on Search AND Category
+    // Filter based on Search AND Category
     const filteredJobs = jobsData.filter(job => {
-      // Check Category Match
       const matchesCategory = currentCategory === "All" || job.type === currentCategory;
-      
-      // Check Search Match (Checks Title, Company, and Description)
       const searchLower = currentSearchQuery.toLowerCase();
       const matchesSearch = 
         job.title.toLowerCase().includes(searchLower) || 
@@ -193,24 +187,25 @@
       return matchesCategory && matchesSearch;
     });
 
-    // Step B: Slice for Pagination
     const jobsToRender = filteredJobs.slice(0, currentlyDisplayed);
 
-    // Step C: Render HTML
     if (jobsToRender.length === 0) {
-      gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">No jobs found matching your criteria.</div>`;
+      gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">No jobs found matching your criteria. Try adjusting your search.</div>`;
     } else {
       jobsToRender.forEach(job => {
         const companyInitials = job.company.substring(0, 2).toUpperCase();
         const timeAgoText = calculateDaysAgo(job.postedDate);
-        const salaryText = `${formatSalary(job.salaryMin)} - ${formatSalary(job.salaryMax)}`;
+        
+        const salaryText = job.salaryMin === "----" 
+            ? "Salary Undisclosed" 
+            : `${formatSalary(job.salaryMin)} - ${formatSalary(job.salaryMax)}`;
 
         const cardHTML = `
           <div class="glass-card rounded-2xl p-6 flex flex-col h-full relative overflow-hidden">
             <div class="flex justify-between items-start mb-4">
               <div>
                 <span class="text-sm font-semibold text-gray-400 uppercase tracking-wider">${job.company}</span>
-                <h3 class="text-xl font-bold text-white mt-1">${job.title}</h3>
+                <h3 class="text-xl font-bold text-white mt-1 line-clamp-2" title="${job.title}">${job.title}</h3>
               </div>
               <div class="w-12 h-12 rounded-lg bg-navy-lighter flex items-center justify-center border border-white/5 flex-shrink-0">
                 <span class="text-electric font-bold text-lg">${companyInitials}</span>
@@ -227,7 +222,9 @@
 
             <div class="mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
               <span class="text-xs text-gray-500">${timeAgoText}</span>
-              <a href="https://pk.indeed.com/" class="px-6 py-2 bg-electric text-white font-bold rounded-lg hover:bg-blue-600 transition-colors">Apply Now</a>
+              <a href="${job.link}" class="px-6 py-2 bg-electric text-white font-bold rounded-lg hover:bg-blue-600 transition-colors text-center">
+                Apply Now
+              </a>
             </div>
           </div>
         `;
@@ -235,7 +232,6 @@
       });
     }
 
-    // Step D: Handle "Load More" Button Visibility
     if (currentlyDisplayed >= filteredJobs.length) {
       loadMoreContainer.style.display = 'none';
     } else {
@@ -244,43 +240,35 @@
   }
 
   // 5. Event Listeners for Interaction
-  
-  // A. Search Bar Listener
   document.getElementById('search-input').addEventListener('input', (e) => {
     currentSearchQuery = e.target.value;
-    currentlyDisplayed = 9; // Reset pagination on new search
+    currentlyDisplayed = 9; 
     filterAndRenderJobs();
   });
 
-  // B. Category Pills Listener
   const filterButtons = document.querySelectorAll('.filter-btn');
   filterButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      // Reset visual styles on all buttons to inactive
       filterButtons.forEach(b => {
         b.className = "filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-navy-light text-gray-300 border border-white/10 hover:bg-white/10";
       });
       
-      // Apply active visual style to the clicked button
       const clickedBtn = e.target;
       clickedBtn.className = "filter-btn px-5 py-2 rounded-full font-medium transition-colors bg-electric/20 text-electric border border-electric/30";
       
-      // Update state and render
       currentCategory = clickedBtn.getAttribute('data-category');
-      currentlyDisplayed = 9; // Reset pagination on new filter
+      currentlyDisplayed = 9; 
       filterAndRenderJobs();
     });
   });
 
-  // C. Load More Button Listener
   document.getElementById('load-more-btn').addEventListener('click', () => {
     currentlyDisplayed += jobsToLoad;
     filterAndRenderJobs();
   });
 
-  // 6. Execute initial render on page load
-  document.addEventListener('DOMContentLoaded', filterAndRenderJobs);
+  // 6. Initialize App: Fetch data on page load
+  document.addEventListener('DOMContentLoaded', fetchJobsFromDatabase);
 </script>
-
   </body>
 </html>

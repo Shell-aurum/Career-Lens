@@ -1,0 +1,251 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerLens | Resume Intelligence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { navy: { DEFAULT: '#0A192F', light: '#112240', lighter: '#233554' }, electric: '#007BFF' },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.4s ease forwards; }
+  </style>
+</head>
+<body class="bg-navy text-gray-200 font-sans antialiased min-h-screen flex flex-col">
+
+  <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
+      <a href="{% url 'dashboard' %}" class="flex items-center gap-2 hover:opacity-80">
+        <div class="w-10 h-10 bg-electric rounded-xl flex items-center justify-center">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+            <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          </svg>
+        </div>
+        <span class="text-2xl font-bold text-white tracking-tight">CareerLens</span>
+      </a>
+      <a href="{% url 'dashboard' %}" class="text-sm font-semibold text-gray-400 hover:text-white">
+        &larr; Back to Dashboard
+      </a>
+    </div>
+  </nav>
+
+  <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+    
+    <div class="text-center mb-12">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500/10 text-green-400 mb-6 border border-green-500/20">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+      </div>
+      <h1 class="text-4xl font-extrabold text-white mb-4">Your Profile is Ready</h1>
+      <p class="text-lg text-gray-400 max-w-2xl mx-auto">We've successfully mapped your experience. Choose how you want to leverage your AI profile below.</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+      
+      <div class="glass-card rounded-3xl p-8 flex flex-col relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-electric"></div>
+        
+        <div class="mb-6">
+          <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mb-4 border border-blue-500/20">
+            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-2">Smart Job Match</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Let our AI scan the active job market and find roles that perfectly align with your hidden skills and career trajectory.</p>
+        </div>
+
+        <div id="recommend-container" class="mt-auto">
+          <button id="btn-recommend" class="w-full py-4 bg-navy-lighter border border-white/10 text-white font-bold rounded-xl hover:bg-electric hover:border-transparent transition-all shadow-lg">
+            Discover Opportunities
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-8 flex flex-col relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
+        
+        <div class="mb-6">
+          <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 border border-emerald-500/20">
+            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          </div>
+          <h3 class="text-2xl font-bold text-white mb-2">ATS Simulator</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Select a target role to see if your resume will pass the automated filters. We'll identify the exact keywords you're missing.</p>
+        </div>
+
+        <div id="ats-container" class="mt-auto space-y-4">
+          <select id="job-target-select" class="w-full bg-navy border border-white/10 text-gray-300 text-sm rounded-xl focus:ring-emerald-500 focus:border-emerald-500 block p-3.5 outline-none cursor-pointer">
+            <option value="" disabled selected>Select a target job...</option>
+            {% for job in jobs %}
+                <option value="{{ job.id }}">{{ job.title }} - {{ job.company_name }}</option>
+            {% endfor %}
+          </select>
+
+          <button id="btn-ats" class="w-full py-4 bg-emerald-500 text-white font-bold rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20">
+            Run Simulation
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const resumeId = "{{ resume.id }}";
+    const csrfToken = "{{ csrf_token }}";
+
+    // ════════════════════════════════════════════════
+    // 1. GENERATE SEMANTIC MATCHES
+    // ════════════════════════════════════════════════
+    const btnRecommend = document.getElementById('btn-recommend');
+    const recommendContainer = document.getElementById('recommend-container');
+    
+    btnRecommend.addEventListener('click', async () => {
+        btnRecommend.innerHTML = 'Analyzing Market...';
+        btnRecommend.disabled = true;
+
+        try {
+            const response = await fetch("{% url 'recommend_jobs' %}");
+            const data = await response.json();
+
+            if (response.ok) {
+                btnRecommend.style.display = 'none';
+                
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'p-6 bg-blue-500/10 border border-blue-500/20 rounded-2xl animate-fade-in text-center';
+                
+                // Clean UI for matches. No distances or raw IDs shown to user.
+                resultDiv.innerHTML = `
+                    <h4 class="text-lg font-bold text-white mb-2">We found strong matches!</h4>
+                    <p class="text-sm text-gray-400 mb-4">Our AI has identified several roles perfectly suited for your profile.</p>
+                    <a href="{% url 'explore' %}" class="inline-block px-6 py-3 bg-electric text-white font-bold rounded-xl hover:bg-blue-600 transition-colors">
+                        View Matched Jobs
+                    </a>
+                `;
+                recommendContainer.appendChild(resultDiv);
+            } else {
+                btnRecommend.innerHTML = `Error: Try Again`;
+                btnRecommend.disabled = false;
+            }
+        } catch (error) {
+            btnRecommend.innerHTML = 'Network Error';
+            btnRecommend.disabled = false;
+        }
+    });
+
+   // ════════════════════════════════════════════════
+    // 2. TARGETED ATS SCAN (MULTI-USE UPGRADE)
+    // ════════════════════════════════════════════════
+    const btnAts = document.getElementById('btn-ats');
+    const jobSelect = document.getElementById('job-target-select');
+    const atsContainer = document.getElementById('ats-container');
+
+    btnAts.addEventListener('click', async () => {
+        if (!jobSelect.value) {
+            alert("Please select a job first.");
+            return;
+        }
+
+        const originalBtnText = btnAts.innerHTML;
+        btnAts.innerHTML = 'Scanning...';
+        btnAts.disabled = true;
+
+        const payload = { resume_id: resumeId, job_id: jobSelect.value };
+
+        try {
+            const response = await fetch("{% url 'evaluate_ats' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                // 1. Remove previous results if they exist so they don't stack infinitely
+                const existingResults = document.getElementById('ats-results-wrapper');
+                if (existingResults) existingResults.remove();
+
+                // 2. Create new results wrapper
+                const resultsUI = document.createElement('div');
+                resultsUI.id = 'ats-results-wrapper';
+                resultsUI.className = 'w-full p-6 bg-navy border border-white/5 rounded-2xl animate-fade-in flex flex-col items-center text-center mt-6';
+                
+                let chartColor = data.score >= 70 ? '#10b981' : (data.score >= 40 ? '#f59e0b' : '#ef4444');
+                let message = data.score >= 70 ? 'Looks Good!' : 'Needs Work';
+
+                resultsUI.innerHTML = `
+                    <div class="relative w-32 h-32 mb-6">
+                        <canvas id="atsChart"></canvas>
+                        <div class="absolute inset-0 flex items-center justify-center flex-col mt-2">
+                            <span class="text-3xl font-extrabold text-white">${data.score}<span class="text-sm text-gray-500">%</span></span>
+                        </div>
+                    </div>
+                    <h5 class="text-white font-bold text-lg mb-1">${message}</h5>
+                    <p class="text-xs text-gray-400 mb-6">Based on standard ATS filtering algorithms.</p>
+
+                    <div id="skills-container" class="w-full text-left bg-navy-lighter/50 rounded-xl p-4 border border-white/5">
+                        <strong class="text-gray-300 text-xs uppercase tracking-widest block mb-3">Priority Keywords to Add</strong>
+                        <div class="flex flex-wrap gap-2" id="missing-skills-pills"></div>
+                    </div>
+                `;
+                atsContainer.appendChild(resultsUI);
+
+                // Render Chart
+                const ctx = document.getElementById('atsChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Match', 'Gap'],
+                        datasets: [{
+                            data: [data.score, 100 - data.score],
+                            backgroundColor: [chartColor, '#1e293b'],
+                            borderWidth: 0,
+                            cutout: '80%',
+                            borderRadius: 10
+                        }]
+                    },
+                    options: { responsive: true, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+                });
+
+                // Render Skills
+                const skillsContainer = document.getElementById('missing-skills-pills');
+                if (data.missing_skills.length > 0) {
+                    data.missing_skills.forEach(skill => {
+                        skillsContainer.innerHTML += `<span class="px-3 py-1 bg-white/5 text-gray-300 border border-white/10 rounded-lg text-xs font-medium">${skill}</span>`;
+                    });
+                } else {
+                    skillsContainer.innerHTML = `<span class="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-lg text-xs font-semibold">No critical gaps identified!</span>`;
+                }
+
+                // 3. Reset the button so the user can run another simulation
+                btnAts.innerHTML = 'Run Another Simulation';
+                btnAts.disabled = false;
+
+            } else {
+                btnAts.classList.replace('bg-emerald-500', 'bg-red-500');
+                btnAts.innerHTML = `Error: Try Again`;
+                btnAts.disabled = false;
+            }
+        } catch (error) {
+            btnAts.innerHTML = 'Network Error';
+            btnAts.disabled = false;
+        }
+    });
+  </script>
+</body>
+</html>

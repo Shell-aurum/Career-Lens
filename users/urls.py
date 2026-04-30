@@ -9,7 +9,10 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
     
-    # NEW: The route for the Job Board
+    # The route for the Job Board
     path('explore/', views.explore_view, name='explore'),
     path('analyse-resume/', views.analyse_resume_view, name='analyse_resume'),
+   
+    # The dedicated report page
+    path('resume/report/<int:resume_id>/', views.resume_report_view, name='resume_report'),
 ]

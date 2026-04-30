@@ -20,4 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')), # Connects the users app
+    path('ai/', include('ai_engine.urls')), # Injects your AI pipeline
+    path('jobs/', include('jobs.urls'))
 ]

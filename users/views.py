@@ -1,6 +1,24 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth import login, logout, authenticate
 from .models import User, JobSeeker, Recruiter
+from ai_engine.models import Resume
+from django.contrib.auth.decorators import login_required
+from jobs.models import JobListing
+
+@login_required
+def resume_report_view(request, resume_id):
+    resume = get_object_or_404(Resume, id=resume_id, user=request.user)
+    word_count = len(resume.parsed_text.split()) if resume.parsed_text else 0
+
+    # Fetch all live jobs from the database
+    jobs = JobListing.objects.all().order_by('-posted_date')
+
+    context = {
+        'resume': resume,
+        'word_count': word_count,
+        'jobs': jobs # Passes the live QuerySet to the template
+    }
+    return render(request, 'users/resume_report.html', context)
 
 def signup_view(request):
     if request.method == 'POST':
@@ -36,7 +54,6 @@ def signup_view(request):
 def dashboard_view(request):
     return render(request, 'users/dashboard.html') # Placeholder for your dashboard
 
-from django.contrib.auth import authenticate, login
 
 def login_view(request):
     if request.method == 'POST':
@@ -59,7 +76,7 @@ def login_view(request):
     return render(request, 'users/index.html')
 
 
-from django.contrib.auth import logout # Make sure this is imported at the top!
+
 
 # ... your other views ...
 
@@ -68,7 +85,6 @@ def logout_view(request):
         logout(request)
         return redirect('home') # Sends them back to the login page
     
-from django.contrib.auth.decorators import login_required
 
 # Ensure only logged-in users can see the job board
 @login_required

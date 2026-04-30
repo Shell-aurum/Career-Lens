@@ -92,48 +92,89 @@
     </div>
   </main>
 
-  <script>
-    // JS to handle UI changes when a file is selected
-    const fileInput = document.getElementById('resume-upload');
-    const fileNameDisplay = document.getElementById('file-name-display');
-    const analyzeBtn = document.getElementById('analyze-btn');
-    const dropzone = document.getElementById('dropzone');
+<script>
+  const fileInput = document.getElementById('resume-upload');
+  const fileNameDisplay = document.getElementById('file-name-display');
+  const analyzeBtn = document.getElementById('analyze-btn');
+  const dropzone = document.getElementById('dropzone');
+  const form = document.getElementById('resume-form');
 
-    fileInput.addEventListener('change', function(e) {
-      if (this.files && this.files.length > 0) {
-        fileNameDisplay.textContent = this.files[0].name;
-        fileNameDisplay.classList.add('text-electric');
-        
-        // Enable the submit button
-        analyzeBtn.disabled = false;
-        analyzeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-      }
-    });
+  // Handle File Selection UI
+  fileInput.addEventListener('change', function(e) {
+    if (this.files && this.files.length > 0) {
+      fileNameDisplay.textContent = this.files[0].name;
+      fileNameDisplay.classList.add('text-electric');
+      analyzeBtn.disabled = false;
+      analyzeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+  });
 
-    // Drag and Drop styling
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      dropzone.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults (e) {
+  // Handle Drag & Drop
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, e => {
       e.preventDefault();
       e.stopPropagation();
+    });
+  });
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'));
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'));
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    fileInput.files = e.dataTransfer.files;
+    fileInput.dispatchEvent(new Event('change')); 
+  });
+
+  // Handle AJAX Form Submission to AI Backend
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); // Prevent standard HTML submission
+    
+    // UI Loading State
+    const originalBtnHTML = analyzeBtn.innerHTML;
+    analyzeBtn.innerHTML = `Processing...`;
+    analyzeBtn.disabled = true;
+
+    const formData = new FormData(form);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    try {
+      const response = await fetch("{% url 'process_resume' %}", {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrfToken
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+       // AI Pipeline Succeeded
+        analyzeBtn.innerHTML = `Success! Redirecting...`;
+        analyzeBtn.classList.replace('bg-electric', 'bg-green-500');
+        
+        // Save the resume_id locally just in case
+        sessionStorage.setItem('current_resume_id', data.resume_id);
+        
+        // INSTANT REDIRECT TO THE NEW REPORT PAGE
+        window.location.href = `/resume/report/${data.resume_id}/`;
+        
+      } else {
+        // AI Pipeline Failed
+        analyzeBtn.innerHTML = `Error: ${data.error || 'Upload failed'}`;
+        analyzeBtn.classList.replace('bg-electric', 'bg-red-500');
+      }
+
+    } catch (error) {
+      console.error('Submission error:', error);
+      analyzeBtn.innerHTML = `Network Error`;
     }
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-      let dt = e.dataTransfer;
-      let files = dt.files;
-      fileInput.files = files; // Assign dragged file to input
-      fileInput.dispatchEvent(new Event('change')); // Trigger UI update
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
