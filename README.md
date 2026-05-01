@@ -82,7 +82,7 @@ pip install -r requirements.txt
 ### 3. Environment Variables
 Create a `.env` file in the root directory and add your Gemini API key for the RAG chatbot:
 ```env
-GEMINI_API_KEY=your_api_key_here
+GROQ_API_KEY= generate and use your own api key
 ```
 
 ### 4. Run Diagnostics & Server
