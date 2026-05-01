@@ -7,7 +7,7 @@ from .nlp_pipeline import extract_text_from_pdf, calculate_ats_score
 from .embeddings import store_resume, get_semantic_job_matches
 from .rag_chatbot import generate_rag_response
 from jobs.models import JobListing 
-
+from django.shortcuts import render, redirect
 
 
 @login_required
@@ -102,32 +102,57 @@ def recommend_jobs(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
+
+@login_required
+def chatbot_interface(request):
+    """Renders the Premium Chatbot UI for BOTH Seekers and Recruiters."""
+    
+    # Check if the user has a resume that ACTUALLY contains parsed text
+    has_resume = Resume.objects.filter(user=request.user).exclude(parsed_text__isnull=True).exclude(parsed_text="").exists()
+    
+    return render(request, 'ai_engine/chatbot.html', {'has_resume': has_resume})
+
 @login_required
 @require_POST
 def ask_rag_chatbot(request):
-    """
-    Hasaan: Route the premium user chat UI here.
-    Expects JSON payload with 'query', 'resume_id', and 'job_id'.
-    """
+    """Handles async messages and routes logic based on user role."""
     try:
         data = json.loads(request.body)
         user_query = data.get('query')
-        
-        # Fetch the context objects
-        resume = Resume.objects.get(id=data.get('resume_id'))
-        report = ATSReport.objects.filter(resume=resume, job_id=data.get('job_id')).last()
-        # job = JobListing.objects.get(id=data.get('job_id'))
-        
-        job_desc = "Placeholder job description from Hasaan's DB"
-        missing_skills = report.missing_skills if report else []
 
-        # AI Pipeline: Generate LLM response
-        bot_reply = generate_rag_response(
-            user_query=user_query,
-            parsed_resume=resume.parsed_text,
-            job_description=job_desc,
-            ats_missing_skills=missing_skills
-        )
+        if not user_query:
+            return JsonResponse({'error': 'Message cannot be empty.'}, status=400)
+
+        is_recruiter = getattr(request.user, 'is_recruiter', False)
+
+        if is_recruiter:
+            # 1. RECRUITER LOGIC: Pass only the query and role
+            bot_reply = generate_rag_response(
+                user_query=user_query,
+                role="recruiter"
+            )
+        else:
+            # 2. JOB SEEKER LOGIC: Fetch context
+            resume = Resume.objects.filter(user=request.user).last()
+            parsed_resume = resume.parsed_text if resume else "The user hasn't uploaded a resume yet."
+
+            latest_report = ATSReport.objects.filter(resume=resume).last() if resume else None
+            
+            if latest_report:
+                job = JobListing.objects.get(id=latest_report.job_id)
+                job_desc = job.description
+                missing_skills = latest_report.missing_skills
+            else:
+                job_desc = "No specific job targeted yet."
+                missing_skills = []
+
+            bot_reply = generate_rag_response(
+                user_query=user_query,
+                role="job_seeker",
+                parsed_resume=parsed_resume,
+                job_description=job_desc,
+                ats_missing_skills=missing_skills
+            )
 
         return JsonResponse({'reply': bot_reply}, status=200)
 

@@ -6,16 +6,12 @@
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <title>CareerLens | Dashboard</title>
-  
-  <link href="https://fonts.googleapis.com" rel="preconnect" />
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <!-- Load Inter font for modern typography -->
-  <link href="https://fonts.googleapis.com" rel="preconnect" />
-  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
-    rel="stylesheet" />
-  <!-- Tailwind CSS v3 CDN -->
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script>
     tailwind.config = {
@@ -24,136 +20,206 @@
           colors: {
             navy: {
               DEFAULT: '#0A192F',
-              light: '#112240',
+              light:   '#112240',
               lighter: '#233554',
             },
-            electric: '#007BFF',
+            electric: {
+              DEFAULT: '#007BFF',
+              hover:   '#0056b3',
+            },
+            emerald: {
+              DEFAULT: '#1097b9',
+              hover:   '#0d7a96',
+            },
           },
           fontFamily: {
             sans: ['Inter', 'sans-serif'],
           },
-        }
-      }
+        },
+      },
     }
   </script>
-  <style data-purpose="custom-glassmorphism">
-    .glass-card {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: transform 0.3s ease, background 0.3s ease;
-    }
 
+  <style>
+    /* ── Glass card ───────────────────────────────────────────────────────── */
+    .glass-card {
+      background:      rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border:          1px solid rgba(255, 255, 255, 0.1);
+      /* IMPROVEMENT 3: cubic-bezier + scale on hover */
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
     .glass-card:hover {
       background: rgba(255, 255, 255, 0.06);
-      transform: translateY(-5px);
+      /* IMPROVEMENT 3: lift + subtle scale */
+      transform: translateY(-8px) scale(1.02);
     }
 
-    .gradient-text {
-      background: linear-gradient(135deg, #007BFF 0%, #00d4ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-gradient {
-      background: radial-gradient(circle at top right, rgba(0, 123, 255, 0.15), transparent),
-        radial-gradient(circle at bottom left, rgba(0, 123, 255, 0.1), transparent);
-    }
-  </style>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            navy: {
-              DEFAULT: '#0A192F',
-              light: '#112240',
-              lighter: '#233554',
-            },
-            electric: '#007BFF', // Job Seeker Blue
-            emerald: '#1097b9',  // Recruiter Vibrant Green
-          },
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-        }
-      }
-    }
-  </script>
-  <style data-purpose="custom-glassmorphism">
-    .glass-card {
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: transform 0.3s ease, background 0.3s ease;
-    }
-
-    .glass-card:hover {
-      background: rgba(255, 255, 255, 0.06);
-      transform: translateY(-5px);
-    }
-
-    /* Job Seeker Gradients */
+    /* ── Gradient helpers ─────────────────────────────────────────────────── */
     .gradient-text-seeker {
       background: linear-gradient(135deg, #007BFF 0%, #00d4ff 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .hero-gradient-seeker {
-      background: radial-gradient(circle at top right, rgba(0, 123, 255, 0.15), transparent),
-        radial-gradient(circle at bottom left, rgba(0, 123, 255, 0.1), transparent);
+      background:
+        radial-gradient(circle at top right,  rgba(0, 123, 255, 0.15), transparent),
+        radial-gradient(circle at bottom left, rgba(0, 123, 255, 0.10), transparent);
     }
-
-    /* Recruiter Gradients */
     .gradient-text-recruiter {
       background: linear-gradient(135deg, #10b3b9 0%, #3493d3 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     .hero-gradient-recruiter {
-      background: radial-gradient(circle at top right, rgba(16, 165, 185, 0.15), transparent),
-        radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent);
+      background:
+        radial-gradient(circle at top right,  rgba(16, 165, 185, 0.15), transparent),
+        radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.10), transparent);
+    }
+
+    /* ── Modal animation ─────────────────────────────────────────────────── */
+    @keyframes slideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .animate-slide-up {
+      animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    /* ── Mobile-menu slide-down ───────────────────────────────────────────── */
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    #mobile-menu.open {
+      animation: slideDown 0.2s ease forwards;
+    }
+
+    /* ── Subscribe spinner ───────────────────────────────────────────────── */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .btn-spinner {
+      display:         inline-block;
+      width:           14px;
+      height:          14px;
+      border:          2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius:   50%;
+      animation:       spin 0.7s linear infinite;
+      vertical-align:  middle;
+      margin-right:    6px;
     }
   </style>
-  
 </head>
 
 <body class="bg-navy text-gray-200 font-sans antialiased">
-  
-  <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/80 backdrop-blur-md">
+
+  <!-- ═══════════════════════════ NAVBAR ═══════════════════════════════════ -->
+  <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/80 backdrop-blur-md"
+       role="navigation" aria-label="Main navigation">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-20">
-        
+
+        <!-- Logo -->
         <div class="flex items-center gap-2">
-          <div class="w-10 h-10 {% if user.is_recruiter %}bg-emerald{% else %}bg-electric{% endif %} rounded-xl flex items-center justify-center">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-              <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          <div class="w-10 h-10 {% if user.is_recruiter %}bg-emerald{% else %}bg-electric{% endif %} rounded-xl flex items-center justify-center"
+               aria-hidden="true">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                 aria-hidden="true" focusable="false">
+              <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+              <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
             </svg>
           </div>
           <span class="text-2xl font-bold text-white tracking-tight">CareerLens</span>
         </div>
 
+        <!-- Desktop Nav -->
         <div class="hidden md:flex items-center space-x-6">
-          <span class="text-gray-300 font-medium">
-            Welcome back, <span class="text-white font-bold">{{ user.first_name|default:user.username }}</span>
+          <span class="text-gray-300 font-medium text-sm">
+            Welcome, <span class="text-white font-bold">{{ user.first_name|default:user.username }}</span>
           </span>
-          
+
+          <!-- Desktop mode-switch form (CSRF is present) -->
+          <form action="{% url 'toggle_mode' %}" method="POST" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="bg-navy-lighter border border-white/10 text-gray-300 px-4 py-2 rounded-full font-semibold hover:text-white hover:bg-white/5 transition-all shadow-lg flex items-center gap-2 text-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+              Switch to {% if user.is_recruiter %}Job Seeker{% else %}Recruiter{% endif %}
+            </button>
+          </form>
+
           <form action="{% url 'logout' %}" method="POST" class="inline">
             {% csrf_token %}
-            <button type="submit" class="bg-transparent border border-red-500/50 text-red-400 px-6 py-2 rounded-full font-semibold hover:bg-red-500 hover:text-white transition-all shadow-lg hover:shadow-red-500/20">
+            <button type="submit"
+              class="bg-transparent border border-red-500/50 text-red-400 px-6 py-2 rounded-full font-semibold hover:bg-red-500 hover:text-white transition-all shadow-lg hover:shadow-red-500/20 text-sm">
               Log Out
             </button>
           </form>
         </div>
 
+        <!-- Mobile hamburger -->
+        <!--
+          IMPROVEMENT: aria-expanded updated in JS so screen-readers know the menu state.
+        -->
+        <button id="mobile-menu-btn"
+          class="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu">
+          <svg id="hamburger-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+               aria-hidden="true" focusable="false">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+               aria-hidden="true" focusable="false">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+
       </div>
     </div>
+
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu"
+         class="hidden md:hidden border-t border-white/10 bg-navy/95 backdrop-blur-md px-4 py-4 space-y-3"
+         role="menu"
+         aria-label="Mobile navigation">
+
+      <p class="text-gray-400 text-sm px-2">
+        Welcome, <span class="text-white font-semibold">{{ user.first_name|default:user.username }}</span>
+      </p>
+
+      <!--
+        IMPROVEMENT: CSRF token is present. The button is type="button" and JS
+        calls form.submit() — identical pattern to the desktop form.
+      -->
+      <form id="mode-switch-form-mobile" action="{% url 'toggle_mode' %}" method="POST">
+        {% csrf_token %}
+        <button type="button" id="mobile-switch-btn" role="menuitem"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white hover:bg-white/5 transition-all text-sm font-semibold border border-white/10">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+               aria-hidden="true" focusable="false">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+          </svg>
+          Switch to {% if user.is_recruiter %}Job Seeker{% else %}Recruiter{% endif %}
+        </button>
+      </form>
+
+      <form action="{% url 'logout' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" role="menuitem"
+          class="w-full px-4 py-3 rounded-xl border border-red-500/50 text-red-400 font-semibold hover:bg-red-500 hover:text-white transition-all text-sm">
+          Log Out
+        </button>
+      </form>
+    </div>
   </nav>
+
+  <!-- ═══════════════════════════ HERO ══════════════════════════════════════ -->
   {% if user.is_recruiter %}
-  
-  <section class="relative pt-20 pb-32 overflow-hidden hero-gradient-recruiter">
+  <section class="relative pt-20 pb-32 overflow-hidden hero-gradient-recruiter" aria-label="Recruiter hero">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         <div>
@@ -163,30 +229,33 @@
           <p class="text-xl text-gray-400 mb-10 leading-relaxed max-w-lg">
             Leverage AI-driven candidate matching to discover the perfect fit for your company's open roles.
           </p>
-          <div class="flex flex-col sm:flex-row gap-4">
-            <button class="px-8 py-4 bg-emerald text-white rounded-2xl font-bold text-lg hover:bg-emerald-600 transition-all shadow-xl shadow-emerald/30 flex items-center justify-center gap-2">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-              </svg>
+          <div class="flex flex-col sm:flex-row gap-4 flex-wrap">
+            <a href="#" class="px-8 py-4 bg-emerald text-white rounded-2xl font-bold text-lg hover:bg-emerald-hover transition-all shadow-xl shadow-emerald/30 flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
               Post a New Job
-            </button>
-            <button class="px-8 py-4 bg-transparent border-2 border-white/20 text-white rounded-2xl font-bold text-lg hover:border-emerald hover:text-emerald transition-all flex items-center justify-center">
+            </a>
+            <a href="#" class="px-8 py-4 bg-transparent border-2 border-white/20 text-white rounded-2xl font-bold text-lg hover:border-emerald hover:text-emerald transition-all flex items-center justify-center">
               Search Talent Pool
-            </button>
+            </a>
+            <!-- NEW: AI Hiring Assistant Button -->
+            <a href="{% url 'premium_chat' %}" class="px-8 py-4 bg-gradient-to-r from-emerald to-blue-500 text-white rounded-2xl font-bold text-lg hover:opacity-90 transition-all shadow-lg flex items-center justify-center gap-2 border border-white/20">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+              AI Hiring Assistant
+            </a>
           </div>
         </div>
-        <div class="relative">
+        <div class="relative" aria-hidden="true">
           <div class="absolute -inset-4 bg-emerald/20 blur-3xl rounded-full"></div>
           <div class="relative rounded-3xl shadow-2xl border border-white/10 w-full h-80 bg-navy-lighter flex items-center justify-center">
-             <span class="text-emerald font-mono">Recruiter Analytics Dashboard</span>
+            <span class="text-emerald font-mono">Recruiter Analytics Dashboard</span>
           </div>
         </div>
       </div>
     </div>
   </section>
+
   {% else %}
-  
-  <section class="relative pt-20 pb-32 overflow-hidden hero-gradient-seeker">
+  <section class="relative pt-20 pb-32 overflow-hidden hero-gradient-seeker" aria-label="Job seeker hero">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       <div class="grid lg:grid-cols-2 gap-16 items-center">
         <div>
@@ -196,565 +265,422 @@
           <p class="text-xl text-gray-400 mb-10 leading-relaxed max-w-lg">
             AI-powered job matching, resume analysis, and career insights designed to land you your dream role faster.
           </p>
-          <div class="flex flex-col sm:flex-row gap-4">
-            <a href="{% url 'analyse_resume' %}" class="px-8 py-4 bg-electric text-white rounded-2xl font-bold text-lg hover:bg-blue-600 transition-all shadow-xl shadow-electric/30 flex items-center justify-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-            </svg>
-            Upload Resume
+          <div class="flex flex-col sm:flex-row gap-4 flex-wrap">
+            <a href="{% url 'analyse_resume' %}"
+              class="px-8 py-4 bg-electric text-white rounded-2xl font-bold text-lg hover:bg-electric-hover transition-all shadow-xl shadow-electric/30 flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                   aria-hidden="true" focusable="false">
+                <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                      stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+              </svg>
+              Upload Resume
             </a>
-            <a href="{% url 'explore' %}" class="px-8 py-4 bg-transparent border-2 border-white/20 text-white rounded-2xl font-bold text-lg hover:border-electric hover:text-electric transition-all flex items-center justify-center">
-                Explore Jobs
+            <a href="{% url 'explore' %}"
+              class="px-8 py-4 bg-transparent border-2 border-white/20 text-white rounded-2xl font-bold text-lg hover:border-electric hover:text-electric transition-all flex items-center justify-center">
+              Explore Jobs
             </a>
-            <a href="{% url 'my_applications' %}" class="px-8 py-4 bg-transparent border-2 border-white/20 text-white rounded-2xl font-bold text-lg hover:border-emerald hover:text-emerald transition-all flex items-center justify-center">
-                Track Applications
+            <a href="{% url 'my_applications' %}"
+              class="px-8 py-4 bg-transparent border-2 border-white/20 text-white rounded-2xl font-bold text-lg hover:border-electric hover:text-electric transition-all flex items-center justify-center">
+              Track Applications
+            </a>
+            <a href="{% url 'premium_chat' %}" class="px-8 py-4 bg-gradient-to-r from-electric to-purple-500 text-white rounded-2xl font-bold text-lg hover:opacity-90 transition-all shadow-lg flex items-center justify-center gap-2 border border-white/20">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+              AI Career Coach
             </a>
           </div>
         </div>
-        <div class="relative">
+        <div class="relative" aria-hidden="true">
           <div class="absolute -inset-4 bg-electric/20 blur-3xl rounded-full"></div>
           <div class="relative rounded-3xl shadow-2xl border border-white/10 w-full h-80 bg-navy-lighter flex items-center justify-center">
-             <span class="text-electric font-mono">Job Match Dashboard</span>
+            <span class="text-electric font-mono">Job Match Dashboard</span>
           </div>
         </div>
       </div>
     </div>
   </section>
   {% endif %}
-  <!-- BEGIN: Features Section -->
-  <section class="py-24 bg-navy" data-purpose="features-grid" id="features">
+
+  <!-- ═══════════════════════════ FEATURES ══════════════════════════════════ -->
+  <section class="py-24 bg-navy" id="features" aria-label="Features">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
       <h2 class="text-4xl font-bold text-white mb-4">Precision Tools for Success</h2>
-      <p class="text-gray-400 max-w-2xl mx-auto">Everything you need to navigate the modern job market with data-driven
-        confidence.</p>
+      <p class="text-gray-400 max-w-2xl mx-auto">
+        Everything you need to navigate the modern job market with data-driven confidence.
+      </p>
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Card 1 -->
+
       <div class="glass-card p-8 rounded-3xl">
-        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-            <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6" aria-hidden="true">
+          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
           </svg>
         </div>
         <h3 class="text-xl font-bold text-white mb-3">Job Suggestions</h3>
-        <p class="text-gray-400">Get matched with roles that perfectly align with your unique skill set and experience.
-        </p>
+        <p class="text-gray-400">Get matched with roles that perfectly align with your unique skill set and experience.</p>
       </div>
-      <!-- Card 2 -->
+
       <div class="glass-card p-8 rounded-3xl">
-        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-            <path
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6" aria-hidden="true">
+          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
           </svg>
         </div>
         <h3 class="text-xl font-bold text-white mb-3">Smart Assessment</h3>
         <p class="text-gray-400">AI analysis of your resume with detailed feedback on content and formatting.</p>
       </div>
-      <!-- Card 3 -->
+
       <div class="glass-card p-8 rounded-3xl">
-        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-            <path
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6" aria-hidden="true">
+          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
           </svg>
         </div>
         <h3 class="text-xl font-bold text-white mb-3">ATS Score Checker</h3>
-        <p class="text-gray-400">Ensure your resume passes through applicant tracking systems with a high visibility
-          score.</p>
+        <p class="text-gray-400">Ensure your resume passes through applicant tracking systems with a high visibility score.</p>
       </div>
-      <!-- Card 4 -->
+
       <div class="glass-card p-8 rounded-3xl">
-        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6" aria-hidden="true">
+          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
           </svg>
         </div>
         <h3 class="text-xl font-bold text-white mb-3">Personalized Recs</h3>
         <p class="text-gray-400">Custom career paths based on market trends and your professional trajectory.</p>
       </div>
-      <!-- Card 5 -->
+
       <div class="glass-card p-8 rounded-3xl">
-        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-            <path
-              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m10 0a2 2 0 100-4m0 4a2 2 0 110-4m-4 6v2m0-22v2m-8 8H4m16 0h-2"
-              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6" aria-hidden="true">
+          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m10 0a2 2 0 100-4m0 4a2 2 0 110-4m-4 6v2m0-22v2m-8 8H4m16 0h-2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
           </svg>
         </div>
         <h3 class="text-xl font-bold text-white mb-3">Advanced Filters</h3>
         <p class="text-gray-400">Deep search filters for salary range, remote options, and company culture match.</p>
       </div>
-      <!-- Card 6 -->
+
       <div class="glass-card p-8 rounded-3xl">
-        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6">
-          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-            <path
-              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-              stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        <div class="w-12 h-12 bg-electric/10 rounded-xl flex items-center justify-center mb-6" aria-hidden="true">
+          <svg class="w-6 h-6 text-electric" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
           </svg>
         </div>
         <h3 class="text-xl font-bold text-white mb-3">Premium Tools</h3>
         <p class="text-gray-400">Unlock priority job applications and direct connection to top industry recruiters.</p>
       </div>
+
     </div>
   </section>
-  <!-- END: Features Section -->
-  <!-- BEGIN: How It Works -->
-  <section class="py-24 bg-navy-light/30 border-y border-white/5" data-purpose="how-it-works-steps" id="how-it-works">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-4xl font-bold text-white text-center mb-16">The Path to Your Next Career</h2>
-      <div class="grid md:grid-cols-3 gap-12 relative">
-        <!-- Connecting Line (Desktop) -->
-        <div
-          class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-electric/30 to-transparent -translate-y-1/2">
-        </div>
-        <div class="relative z-10 text-center">
-          <div
-            class="w-16 h-16 bg-navy border-4 border-electric/20 rounded-full flex items-center justify-center text-2xl font-bold text-electric mx-auto mb-6">
-            1</div>
-          <h3 class="text-xl font-bold text-white mb-2">Upload Resume</h3>
-          <p class="text-gray-400">Drop your CV and let our AI parse your expertise.</p>
-        </div>
-        <div class="relative z-10 text-center">
-          <div
-            class="w-16 h-16 bg-navy border-4 border-electric/20 rounded-full flex items-center justify-center text-2xl font-bold text-electric mx-auto mb-6">
-            2</div>
-          <h3 class="text-xl font-bold text-white mb-2">Get Insights</h3>
-          <p class="text-gray-400">Receive customized scoring and job recommendations.</p>
-        </div>
-        <div class="relative z-10 text-center">
-          <div
-            class="w-16 h-16 bg-navy border-4 border-electric/20 rounded-full flex items-center justify-center text-2xl font-bold text-electric mx-auto mb-6">
-            3</div>
-          <h3 class="text-xl font-bold text-white mb-2">Apply</h3>
-          <p class="text-gray-400">Submit optimized applications and track your progress.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- END: How It Works -->
-  <!-- BEGIN: Premium Features -->
-  <section class="py-24 bg-navy" data-purpose="premium-highlights">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid lg:grid-cols-2 gap-20">
-        <div class="space-y-12">
-          <div>
-            <span class="text-electric font-semibold uppercase tracking-widest text-sm">Beyond Job Hunting</span>
-            <h2 class="text-4xl font-bold text-white mt-4 mb-6">Unlock Your Full Potential</h2>
-            <p class="text-gray-400 text-lg">Our premium ecosystem offers more than just a job board. We provide the
-              tools to build a sustainable career.</p>
-          </div>
-          <div class="grid sm:grid-cols-2 gap-8">
-            <div class="flex gap-4">
-              <div
-                class="flex-shrink-0 w-10 h-10 rounded-lg bg-electric/20 flex items-center justify-center text-electric">
-                <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 20 20">
-                  <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path>
-                </svg>
-              </div>
-              <div>
-                <h4 class="text-white font-bold mb-1">AI Career Chatbot</h4>
-                <p class="text-sm text-gray-400">24/7 assistance for career queries.</p>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div
-                class="flex-shrink-0 w-10 h-10 rounded-lg bg-electric/20 flex items-center justify-center text-electric">
-                <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 20 20">
-                  <path
-                    d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z">
-                  </path>
-                </svg>
-              </div>
-              <div>
-                <h4 class="text-white font-bold mb-1">Interview Prep</h4>
-                <p class="text-sm text-gray-400">Mock interviews with AI feedback.</p>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div
-                class="flex-shrink-0 w-10 h-10 rounded-lg bg-electric/20 flex items-center justify-center text-electric">
-                <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 20 20">
-                  <path
-                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3.005 3.005 0 013.75-2.906z">
-                  </path>
-                </svg>
-              </div>
-              <div>
-                <h4 class="text-white font-bold mb-1">Recruiter Portal</h4>
-                <p class="text-sm text-gray-400">Post jobs and find talent directly.</p>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div
-                class="flex-shrink-0 w-10 h-10 rounded-lg bg-electric/20 flex items-center justify-center text-electric">
-                <svg class="w-6 h-6" fill="currentColor" viewbox="0 0 20 20">
-                  <path
-                    d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z">
-                  </path>
-                </svg>
-              </div>
-              <div>
-                <h4 class="text-white font-bold mb-1">Learning Lab</h4>
-                <p class="text-sm text-gray-400">Curated skill-building content.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-navy-lighter/30 rounded-[2.5rem] p-8 border border-white/5 relative flex items-center justify-center">
-          <div class="w-full max-w-sm glass-card rounded-2xl p-6 shadow-2xl">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-3 h-3 rounded-full bg-red-400"></div>
-              <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-              <div class="w-3 h-3 rounded-full bg-green-400"></div>
-            </div>
-            <div class="space-y-4">
-              <div class="h-4 w-3/4 bg-white/10 rounded"></div>
-              <div class="h-4 w-1/2 bg-white/10 rounded"></div>
-              <div
-                class="h-32 w-full bg-electric/5 rounded-xl border border-electric/20 flex items-center justify-center">
-                <span class="text-electric font-mono text-xs">Awaiting input...</span>
-              </div>
-              <div class="flex justify-end">
-                <div class="h-8 w-24 bg-electric rounded-lg"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- END: Premium Features -->
-  <!-- BEGIN: Testimonials -->
-  <section class="py-24 bg-navy-light/10" data-purpose="testimonials">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-4xl font-bold text-white text-center mb-16">Success Stories</h2>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <div class="glass-card p-8 rounded-3xl">
-          <p class="text-gray-300 italic mb-6">"CareerLens gave me the confidence to apply for roles I previously
-            thought were out of reach. The ATS checker is a game-changer!"</p>
-          <div class="flex items-center gap-4">
-            <img alt="Student" class="w-12 h-12 rounded-full border-2 border-electric"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ3bT1OT3xwri5c7W4xYSDfWlD_lgQB7fWCMtjaZEJ0lN8nYX181-dgivQzDv36CX35utU6bo1JWLwN55Fdv0zuj4f40vkpXJv-XNVnlfZRsH6g405cAb5sNqH3GHgJsQJ5b-uNGh4jqcVK0sQp9tvzuS6T507ZLFZEIuKs2vuuRsIAgU5-dkU8L80vNFR9d7ecYvFUn7qXvLtQETvQRfg1Zn71u0nr0U6lCP1ZOGNJkwbNYnMCumjlpGOnS7G1Sqvx7hV9fsZ_gg" />
-            <div>
-              <h4 class="text-white font-bold">Sarah Jenkins</h4>
-              <p class="text-xs text-gray-500">Junior Developer @ FinTech</p>
-            </div>
-          </div>
-        </div>
-        <div class="glass-card p-8 rounded-3xl">
-          <p class="text-gray-300 italic mb-6">"The personalized recommendations were spot on. I found my current
-            marketing manager role within 3 weeks of uploading my resume."</p>
-          <div class="flex items-center gap-4">
-            <img alt="Student" class="w-12 h-12 rounded-full border-2 border-electric"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuACB-I1ee5KjlRwFoQE6obAElX4hTjooAsuoPWCqj2i7AelccXmmhmXIv40ThaL07SN4-mxhB0slZxzDBXqFw8njWSYqFUYW8OWn3ZLdIhVhNzfO99dS7t9Ghf44VTDApLAHSYrIYHcxggxzyfVI7qarB-ftYFrGQiUXv25ehBlHnYQ8tAt0YyDU-MW4kE281u9AhHOSCSU-WbfIyG7merhvIDgxApdjBioxswxVc_fmaCr8E3C_hQ73J_jk8strHRfMYNLBFo97FY" />
-            <div>
-              <h4 class="text-white font-bold">Michael Chen</h4>
-              <p class="text-xs text-gray-500">Marketing Manager @ SaaS Co.</p>
-            </div>
-          </div>
-        </div>
-        <div class="glass-card p-8 rounded-3xl">
-          <p class="text-gray-300 italic mb-6">"As a graduating senior, I was lost. The AI Career Chatbot helped me
-            refine my search and polish my interview skills."</p>
-          <div class="flex items-center gap-4">
-            <img alt="Student" class="w-12 h-12 rounded-full border-2 border-electric"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWtTuCGmiXB2SSLEeC0TPtWmU9SGI8LEQrCEDsB-uBklOd_AeLfTRGUMA90XFCvDY0EFkBb35JjlVYfsc16JZzNVkfcwYu-Q5wm6BrvvMNt_E5dJsyAOl-iCEs8jBR0RiOiecYdhOPV9yET0hq5L8XAAG02D7H8Erhf1qWQROQ_IbE-XbEnIel-yLp4uC8qlnE-X47Oi6XQc-69kD1GoxG0jO8Rp9PR5agKq5zTfmK09ViOVKTTb86tezvXw8VU7DayuUrm0SwRlg" />
-            <div>
-              <h4 class="text-white font-bold">Emma Wilson</h4>
-              <p class="text-xs text-gray-500">New Grad @ Creative Studio</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <!-- END: Testimonials -->
-  <!-- BEGIN: Pricing Section -->
-  <section class="py-24 bg-navy" data-purpose="pricing-tiers" id="pricing">
+
+  <!-- ═══════════════════════════ PRICING ═══════════════════════════════════ -->
+  <section class="py-24 bg-navy" id="pricing" aria-label="Pricing">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-16">
         <h2 class="text-4xl font-bold text-white mb-4">Simple, Transparent Pricing</h2>
         <p class="text-gray-400">Choose the plan that fits your career goals.</p>
       </div>
-      <div class="grid md:grid-cols-2 gap-8">
+      <div class="grid md:grid-cols-2 gap-8 items-start">
+
         <!-- Free Tier -->
-        <div class="glass-card p-10 rounded-[2.5rem] border-white/5">
+        <div class="glass-card p-10 rounded-[2.5rem]">
           <h3 class="text-2xl font-bold text-white mb-2">Free</h3>
-          <div class="text-4xl font-extrabold text-white mb-6">$0 <span
-              class="text-lg font-normal text-gray-500">/mo</span></div>
-          <ul class="space-y-4 mb-10 text-gray-400">
+          <div class="text-4xl font-extrabold text-white mb-6">
+            $0 <span class="text-lg font-normal text-gray-500">/mo</span>
+          </div>
+          <ul class="space-y-4 mb-10 text-gray-400" role="list">
             <li class="flex items-center gap-3">
-              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewbox="0 0 20 20">
-                <path
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z">
-                </path>
+              <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
               </svg>
               Standard Job Matching
             </li>
             <li class="flex items-center gap-3">
-              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewbox="0 0 20 20">
-                <path
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z">
-                </path>
+              <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
               </svg>
               Basic Resume Parse
             </li>
             <li class="flex items-center gap-3">
-              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewbox="0 0 20 20">
-                <path
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z">
-                </path>
+              <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
               </svg>
               3 Applications / Week
             </li>
           </ul>
-          <button
-            class="w-full py-4 rounded-2xl border border-white/10 text-white font-bold hover:bg-white/5 transition-all">Get
-            Started</button>
+          <button class="w-full py-4 rounded-2xl border border-white/10 text-white font-bold hover:bg-white/5 transition-all">
+            Get Started
+          </button>
         </div>
+
         <!-- Premium Tier -->
-        <div
-          class="relative rounded-[2.5rem] p-[2px] bg-gradient-to-b from-electric to-blue-800 shadow-2xl shadow-electric/20 transform md:scale-105">
+        <div class="relative rounded-[2.5rem] p-[2px] bg-gradient-to-b from-electric to-blue-800 shadow-2xl shadow-electric/20 transform md:scale-105">
           <div class="bg-navy rounded-[2.4rem] p-10 h-full">
-            <div
-              class="absolute -top-4 left-1/2 -translate-x-1/2 bg-electric text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
-              Most Popular</div>
+            <!--
+              IMPROVEMENT: max-w + truncation guard so badge never overflows
+              on very small screens.
+            -->
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-electric text-white
+                        px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest
+                        max-w-[90%] text-center whitespace-nowrap overflow-hidden text-ellipsis">
+              Most Popular
+            </div>
             <h3 class="text-2xl font-bold text-white mb-2">Premium</h3>
-            <div class="text-4xl font-extrabold text-white mb-6">$19 <span
-                class="text-lg font-normal text-gray-500">/mo</span></div>
-            <ul class="space-y-4 mb-10 text-gray-300">
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-electric" fill="currentColor" viewbox="0 0 20 20">
-                  <path
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z">
-                  </path>
-                </svg>
-                AI Career Chatbot access
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-electric" fill="currentColor" viewbox="0 0 20 20">
-                  <path
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z">
-                  </path>
-                </svg>
-                Unlimited Applications
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-electric" fill="currentColor" viewbox="0 0 20 20">
-                  <path
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z">
-                  </path>
-                </svg>
-                Interview Simulation
-              </li>
-              <li class="flex items-center gap-3">
-                <svg class="w-5 h-5 text-electric" fill="currentColor" viewbox="0 0 20 20">
-                  <path
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z">
-                  </path>
-                </svg>
-                Priority Support
-              </li>
+            <div class="text-4xl font-extrabold text-white mb-6">
+              $19 <span class="text-lg font-normal text-gray-500">/mo</span>
+            </div>
+            <ul class="space-y-4 mb-10 text-gray-300" role = "list">
+              {% if user.is_recruiter %}
+                  <li class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-electric" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
+                    </svg>
+                    AI Hiring Assistant Access
+                  </li>
+                  <li class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-electric" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
+                    </svg>
+                    Unlimited Job Postings
+                  </li>
+              {% else %}
+                  <li class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-electric" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
+                    </svg>
+                    AI Career Coach Access
+                  </li>
+                  <li class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-electric" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
+                    </svg>
+                    Unlimited Applications
+                  </li>
+              {% endif %}
             </ul>
-            <button id="upgrade-btn" class="w-full py-4 rounded-2xl bg-electric text-white font-bold hover:bg-blue-600 transition-all shadow-lg shadow-electric/25">Upgrade Now</button>
+            <button id="upgrade-btn"
+              class="w-full py-4 rounded-2xl bg-electric text-white font-bold hover:bg-electric-hover transition-all shadow-lg shadow-electric/25">
+              Upgrade Now
+            </button>
           </div>
         </div>
+
       </div>
     </div>
   </section>
-  <!-- END: Pricing Section -->
-  <!-- BEGIN: Footer -->
-  <footer class="bg-navy py-20 border-t border-white/5" data-purpose="site-footer">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-4 gap-12 mb-16">
-        <div class="col-span-1 md:col-span-1">
-          <div class="flex items-center gap-2 mb-6">
-            <div class="w-8 h-8 bg-electric rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-                <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"
-                  stroke-width="2"></path>
-                <path
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-              </svg>
-            </div>
-            <span class="text-xl font-bold text-white">CareerLens</span>
-          </div>
-          <p class="text-gray-500 text-sm">Empowering professionals with AI-driven insights since 2024.</p>
-        </div>
-        <div>
-          <h4 class="text-white font-bold mb-6 uppercase text-xs tracking-widest">Platform</h4>
-          <ul class="space-y-4 text-gray-500 text-sm">
-            <li><a class="hover:text-electric transition-colors" href="#">How it works</a></li>
-            <li><a class="hover:text-electric transition-colors" href="#">Pricing</a></li>
-            <li><a class="hover:text-electric transition-colors" href="#">Job Board</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-white font-bold mb-6 uppercase text-xs tracking-widest">Support</h4>
-          <ul class="space-y-4 text-gray-500 text-sm">
-            <li><a class="hover:text-electric transition-colors" href="#">FAQs</a></li>
-            <li><a class="hover:text-electric transition-colors" href="#">Contact Us</a></li>
-            <li><a class="hover:text-electric transition-colors" href="#">Privacy Policy</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="text-white font-bold mb-6 uppercase text-xs tracking-widest">Social</h4>
-          <div class="flex gap-4">
-            <a class="w-10 h-10 rounded-lg bg-navy-lighter flex items-center justify-center hover:bg-electric transition-colors"
-              href="#">
-              <svg class="w-5 h-5 text-white" fill="currentColor" viewbox="0 0 24 24">
-                <path
-                  d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z">
-                </path>
-              </svg>
-            </a>
-            <a class="w-10 h-10 rounded-lg bg-navy-lighter flex items-center justify-center hover:bg-electric transition-colors"
-              href="#">
-              <svg class="w-5 h-5 text-white" fill="currentColor" viewbox="0 0 24 24">
-                <path
-                  d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z">
-                </path>
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="pt-8 border-t border-white/5 text-center text-gray-600 text-xs">
-        © 2024 CareerLens Inc. All rights reserved.
-      </div>
-    </div>
-  </footer>
-  <footer class="bg-navy py-12 border-t border-white/5 mt-auto">
+
+  <!-- ═══════════════════════════ FOOTER ════════════════════════════════════ -->
+  <footer class="bg-navy py-12 border-t border-white/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 text-xs">
       © 2024 CareerLens Inc. All rights reserved.
     </div>
   </footer>
 
+  <!-- ═══════════════════════════ PAYMENT MODAL ═════════════════════════════ -->
+  <!--
+    IMPROVEMENT: role="dialog" + aria-modal + aria-labelledby for screen-readers.
+    animate-slide-up is NOT hardcoded — it is added/removed in JS so the
+    animation replays on every open.
+  -->
+  <div id="payment-modal"
+       class="hidden fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-[2px]"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="modal-title">
 
-  <style>
-  /* Custom animation for the classic Android bottom-sheet slide up */
-  @keyframes slideUp {
-    from { transform: translateY(100%); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-  .animate-slide-up {
-    animation: slideUp 1.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  }
-</style>
+    <div id="modal-sheet"
+         class="bg-white w-full max-w-sm sm:max-w-md rounded-t-[1.5rem] sm:rounded-2xl overflow-hidden shadow-2xl pb-6 sm:pb-0">
 
-<div id="payment-modal" class="hidden fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-[2px] transition-opacity">
-  
-  <div class="bg-white w-full max-w-sm sm:max-w-md rounded-t-[1.5rem] sm:rounded-2xl overflow-hidden shadow-2xl animate-slide-up pb-6 sm:pb-0">
-    
-    <div class="px-6 py-5 border-b border-gray-200 flex items-start gap-4">
-      <div class="w-14 h-14 bg-electric rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
-        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-          <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-        </svg>
-      </div>
-      <div class="flex-1 mt-1">
-        <h3 class="text-[1.1rem] font-medium text-gray-900 leading-tight font-sans">CareerLens Premium</h3>
-        <p class="text-sm text-gray-500 font-sans">CareerLens Inc.</p>
-      </div>
-    </div>
-
-    <div class="px-6 py-5">
-      <div class="flex justify-between items-center mb-6">
-        <span class="text-[0.95rem] text-gray-600 font-sans">Starting today</span>
-        <span class="text-xl font-medium text-gray-900 font-sans">$19.00/mo</span>
-      </div>
-
-      <div class="flex items-center gap-4 py-4 border-t border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors">
-        <div class="w-10 h-6 border border-gray-200 rounded flex items-center justify-center bg-white shadow-sm">
-          <span class="text-[10px] font-bold text-gray-700 tracking-tighter">G Pay</span>
+      <!-- Modal Header -->
+      <div class="px-6 py-5 border-b border-gray-200 flex items-start gap-4">
+        <div class="w-14 h-14 bg-electric rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"
+             aria-hidden="true">
+          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+               aria-hidden="true" focusable="false">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
         </div>
-        <div class="flex-1">
-          <p class="text-[0.95rem] text-gray-900 font-medium font-sans">Mastercard •••• 1234</p>
+        <div class="flex-1 mt-1">
+          <h3 id="modal-title" class="text-[1.1rem] font-medium text-gray-900 leading-tight">
+            CareerLens Premium
+          </h3>
+          <p class="text-sm text-gray-500">CareerLens Inc.</p>
         </div>
-        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
       </div>
 
-      <p class="text-[0.75rem] text-gray-500 mt-5 leading-relaxed font-sans">
-        By tapping Subscribe, you agree to the Google Play <a href="#" class="text-[#01875F] hover:underline">Terms of Service</a>. You'll be charged $19.00/mo automatically. Cancel anytime in Subscriptions on Google Play.
-      </p>
-    </div>
+      <!-- Modal Body -->
+      <div class="px-6 py-5">
+        <div class="flex justify-between items-center mb-6">
+          <span class="text-[0.95rem] text-gray-600">Starting today</span>
+          <span class="text-xl font-medium text-gray-900">$19.00/mo</span>
+        </div>
+        <div class="flex items-center gap-4 py-4 border-t border-b border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors">
+          <div class="w-10 h-6 border border-gray-200 rounded flex items-center justify-center bg-white shadow-sm">
+            <span class="text-[10px] font-bold text-gray-700 tracking-tighter">G Pay</span>
+          </div>
+          <div class="flex-1">
+            <p class="text-[0.95rem] text-gray-900 font-medium">Mastercard •••• 1234</p>
+          </div>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+               aria-hidden="true" focusable="false">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <p class="text-[0.75rem] text-gray-500 mt-5 leading-relaxed">
+          By tapping Subscribe, you agree to the
+          <a href="#" class="text-[#01875F] hover:underline">Terms of Service</a>.
+          You'll be charged $19.00/mo automatically. Cancel anytime in Subscriptions.
+        </p>
+      </div>
 
-    <div class="px-6 py-4 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4 mt-2">
-      <button id="close-modal-btn" class="w-full sm:w-auto text-[#01875F] font-medium px-4 py-2.5 rounded-lg hover:bg-emerald-50 transition-colors font-sans text-[0.95rem]">
-        Cancel
-      </button>
-      <button id="confirm-subscribe-btn" class="w-full sm:w-auto bg-[#01875F] text-white font-medium px-8 py-2.5 rounded-lg hover:bg-[#01704e] transition-colors shadow-sm font-sans text-[0.95rem]">
-        Subscribe
-      </button>
-    </div>
+      <!-- Modal Actions -->
+      <div class="px-6 py-4 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 sm:gap-4 mt-2">
+        <button id="close-modal-btn"
+          class="w-full sm:w-auto text-[#01875F] font-medium px-4 py-2.5 rounded-lg hover:bg-gray-100 transition-colors text-[0.95rem]">
+          Cancel
+        </button>
+        <button id="confirm-subscribe-btn"
+          class="w-full sm:w-auto bg-[#01875F] text-white font-medium px-8 py-2.5 rounded-lg hover:bg-[#01704e] transition-colors shadow-sm text-[0.95rem]"
+          aria-live="polite">
+          Subscribe
+        </button>
+      </div>
 
+    </div>
   </div>
-</div>
+{{ user.is_recruiter|json_script:"recruiter-flag" }}
+  <!-- ═══════════════════════════ SCRIPTS ═══════════════════════════════════ -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // 1. Get the elements
-    const paymentModal = document.getElementById('payment-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const confirmBtn = document.getElementById('confirm-subscribe-btn');
-    
-    // Target the specific Upgrade button in your pricing tier
-    // Note: You must add id="upgrade-btn" to the Premium tier button in your HTML!
-    const upgradeBtn = document.getElementById('upgrade-btn');
+      // ── Element refs ─────────────────────────────────────────────────────
+      const paymentModal         = document.getElementById('payment-modal');
+      const modalSheet           = document.getElementById('modal-sheet');
+      const closeModalBtn        = document.getElementById('close-modal-btn');
+      const confirmBtn           = document.getElementById('confirm-subscribe-btn');
+      const upgradeBtn           = document.getElementById('upgrade-btn');
+      const navbarSwitchBtn      = document.getElementById('navbar-switch-btn');
+      const modeSwitchForm       = document.getElementById('mode-switch-form');
+      const mobileMenuBtn        = document.getElementById('mobile-menu-btn');
+      const mobileMenu           = document.getElementById('mobile-menu');
+      const hamburgerIcon        = document.getElementById('hamburger-icon');
+      const closeIcon            = document.getElementById('close-icon');
+      const mobileSwitchBtn      = document.getElementById('mobile-switch-btn');
+      const modeSwitchFormMobile = document.getElementById('mode-switch-form-mobile');
 
-    // 2. Open Modal Logic
-    if (upgradeBtn) {
-      upgradeBtn.addEventListener('click', (e) => {
-        e.preventDefault();
+      const isRecruiter = JSON.parse(document.getElementById('recruiter-flag').textContent);
+
+      // ── Modal helpers ─────────────────────────────────────────────────────
+      function openModal() {
         paymentModal.classList.remove('hidden');
-      });
-    }
+        paymentModal.setAttribute('aria-hidden', 'false');
 
-    // 3. Close Modal Logic (Clicking Cancel or outside the modal)
-    closeModalBtn.addEventListener('click', () => {
-      paymentModal.classList.add('hidden');
-    });
+        // IMPROVEMENT: void offsetWidth forces a reflow — cleaner than
+        // double requestAnimationFrame but achieves the same animation-replay.
+        modalSheet.classList.remove('animate-slide-up');
+        void modalSheet.offsetWidth;            // ← force reflow
+        modalSheet.classList.add('animate-slide-up');
 
-    paymentModal.addEventListener('click', (e) => {
-      // Close if they click the darkened background, but not the white card
-      if (e.target === paymentModal) {
-        paymentModal.classList.add('hidden');
+        // Focus the first interactive element for keyboard/screen-reader users
+        closeModalBtn.focus();
       }
-    });
 
-    // 4. Handle Subscription Click
-    confirmBtn.addEventListener('click', () => {
-      // Standard button loading state
-      const originalText = confirmBtn.innerText;
-      confirmBtn.innerText = "Processing...";
-      confirmBtn.classList.add('opacity-75', 'cursor-not-allowed');
-      
-      // Simulate API call for now
-      setTimeout(() => {
-        confirmBtn.innerText = "Success!";
-        confirmBtn.classList.replace('bg-[#01875F]', 'bg-gray-800');
-        
+      function closeModal() {
+        paymentModal.classList.add('hidden');
+        paymentModal.setAttribute('aria-hidden', 'true');
+
+        // Reset subscribe button state
+        confirmBtn.disabled   = false;
+        confirmBtn.innerHTML  = 'Subscribe';
+        confirmBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        confirmBtn.style.backgroundColor = '';    // clear any inline colour
+      }
+
+      // ── Desktop navbar switch ─────────────────────────────────────────────
+      if (navbarSwitchBtn) {
+        navbarSwitchBtn.addEventListener('click', () => {
+          isRecruiter ? modeSwitchForm.submit() : openModal();
+        });
+      }
+
+      // ── Mobile menu toggle ────────────────────────────────────────────────
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', () => {
+          const isOpen = !mobileMenu.classList.contains('hidden');
+          if (isOpen) {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('open');
+            hamburgerIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+            // IMPROVEMENT: keep aria-expanded in sync
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+          } else {
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.add('open');
+            hamburgerIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+            mobileMenuBtn.setAttribute('aria-expanded', 'true');
+          }
+        });
+      }
+
+      if (mobileSwitchBtn) {
+        mobileSwitchBtn.addEventListener('click', () => {
+          if (!isRecruiter) {
+            mobileMenu.classList.add('hidden');
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
+            openModal();
+          } else {
+            modeSwitchFormMobile.submit();
+          }
+        });
+      }
+
+      // ── Pricing upgrade button ────────────────────────────────────────────
+      if (upgradeBtn) {
+        upgradeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          openModal();
+        });
+      }
+
+      // ── Close modal ───────────────────────────────────────────────────────
+      closeModalBtn.addEventListener('click', closeModal);
+
+      paymentModal.addEventListener('click', (e) => {
+        if (e.target === paymentModal) closeModal();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !paymentModal.classList.contains('hidden')) {
+          closeModal();
+        }
+      });
+
+      // ── Subscribe button ──────────────────────────────────────────────────
+      // IMPROVEMENT: CSS spinner + cleaner state machine + disabled guard.
+      confirmBtn.addEventListener('click', () => {
+        if (confirmBtn.disabled) return;
+
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('opacity-75', 'cursor-not-allowed');
+        // Inline spinner using the CSS class defined in <style>
+        confirmBtn.innerHTML = '<span class="btn-spinner" aria-hidden="true"></span>Processing...';
+
         setTimeout(() => {
-          paymentModal.classList.add('hidden');
-          // Reset button for next time
-          confirmBtn.innerText = originalText;
-          confirmBtn.classList.remove('opacity-75', 'cursor-not-allowed', 'bg-gray-800');
-          confirmBtn.classList.add('bg-[#01875F]');
-        }, 3500);
-      }, 2000);
+          confirmBtn.innerHTML = '✓ Subscribed!';
+          confirmBtn.style.backgroundColor = '#1e293b';   // slate-800
+
+          setTimeout(() => {
+            modeSwitchForm.submit();
+          }, 1000);   // slightly shorter — feels snappier
+
+        }, 1800);
+      });
+
     });
-  });
-</script>
+  </script>
 
-
-  </body>
+</body>
 </html>

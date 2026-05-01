@@ -15,4 +15,7 @@ urlpatterns = [
    
     # The dedicated report page
     path('resume/report/<int:resume_id>/', views.resume_report_view, name='resume_report'),
+
+    # Mode Switching toggle
+    path('toggle-mode/', views.toggle_user_mode, name='toggle_mode'),
 ]

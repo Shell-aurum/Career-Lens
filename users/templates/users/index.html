@@ -208,6 +208,9 @@
       <form class="form-fields" action="{% url 'signup' %}" method="POST">
         {% csrf_token %} 
         
+        <!-- Hidden input so your backend still receives a default role -->
+        <input type="hidden" name="role" value="job_seeker" />
+        
         <div>
           <label class="field-label">Full Name</label>
           <div class="input-wrap">
@@ -230,34 +233,6 @@
             <i class="fa-solid fa-lock input-icon"></i>
             <input class="field field-pr" name="password" id="spw" placeholder="Min. 8 characters" type="password" required/>
             <i class="fa-regular fa-eye pw-toggle" id="spw-i" onclick="togglePw('spw','spw-i')"></i>
-          </div>
-        </div>
-        
-        <div>
-          <label class="field-label">I am a…</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
-            <label class="role-card">
-              <input checked="" name="role" type="radio" value="job_seeker" onchange="toggleCompanyField()"/>
-              <i class="fa-solid fa-briefcase" style="color:#003e81;font-size:0.85rem;flex-shrink:0;"></i>
-              <div>
-                <div style="font-size:0.78rem;font-weight:700;color:#1e293b;line-height:1.2;">Job Seeker</div>
-              </div>
-            </label>
-            <label class="role-card">
-              <input name="role" type="radio" value="recruiter" onchange="toggleCompanyField()"/>
-              <i class="fa-solid fa-users" style="color:#003e81;font-size:0.85rem;flex-shrink:0;"></i>
-              <div>
-                <div style="font-size:0.78rem;font-weight:700;color:#1e293b;line-height:1.2;">Recruiter</div>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <div id="company-field-container" style="display: none;">
-          <label class="field-label">Company Name</label>
-          <div class="input-wrap">
-            <i class="fa-regular fa-building input-icon"></i>
-            <input class="field" id="company_name" name="company_name" placeholder="Tech Innovations Inc." type="text"/>
           </div>
         </div>
 
@@ -315,29 +290,6 @@
     } else {
       inp.type = 'password';
       ico.classList.replace('fa-eye-slash','fa-eye');
-    }
-  }
-
-  // Handles showing/hiding the Company Name field for recruiters
-  function toggleCompanyField() {
-    const roleRadios = document.getElementsByName('role');
-    const companyContainer = document.getElementById('company-field-container');
-    const companyInput = document.getElementById('company_name');
-    
-    let isRecruiter = false;
-    for (const radio of roleRadios) {
-        if (radio.checked && radio.value === 'recruiter') {
-            isRecruiter = true;
-            break;
-        }
-    }
-    
-    if (isRecruiter) {
-        companyContainer.style.display = 'block';
-        companyInput.required = true;
-    } else {
-        companyContainer.style.display = 'none';
-        companyInput.required = false;
     }
   }
 </script>

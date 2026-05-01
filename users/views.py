@@ -97,3 +97,13 @@ def analyse_resume_view(request):
     # Later, we will point the HTML form to POST directly to the ai_engine.
     return render(request, 'users/analyse_resume.html')
 
+@login_required
+def toggle_user_mode(request):
+    """Allows a user to instantly switch between Job Seeker and Recruiter modes."""
+    if request.method == 'POST':
+        # Flip the boolean
+        request.user.is_recruiter = not request.user.is_recruiter
+        request.user.save()
+        
+    # Redirect back to dashboard
+    return redirect('dashboard')
