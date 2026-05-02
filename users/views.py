@@ -107,3 +107,104 @@ def toggle_user_mode(request):
         
     # Redirect back to dashboard
     return redirect('dashboard')
+
+@login_required
+def talent_pool_view(request):
+    """Renders the ATS Talent Pool with REAL database applications."""
+    if not getattr(request.user, 'is_recruiter', False):
+        return redirect('dashboard')
+        
+    # Fetch real applications (assuming your Job model connects to the recruiter user)
+    # If your Job model doesn't have a specific recruiter field, you can use .all() for testing
+    applications = Application.objects.all().order_by('-id')
+    
+    # Package the real database info into a format our JavaScript can read
+    apps_data = []
+    for app in applications:
+        # Format the date if it exists, otherwise leave empty
+        int_date = app.interview_date.strftime("%b %d, %Y %I:%M %p") if app.interview_date else None
+        
+        apps_data.append({
+            'id': app.id,
+            'name': app.applicant.get_full_name() or app.applicant.username,
+            'role': app.job.title,
+            'match': 92, # Placeholder until ATS logic is hooked up
+            'status': app.status,
+            'date': "Recent", # You can replace with app.created_at.strftime() if you have a created date
+            'interviewDate': int_date
+        })
+        
+    # Send it to the template!
+    context = {
+        'applications_json': json.dumps(apps_data)
+    }
+    return render(request, 'users/talent.html', context)
+
+
+import json
+from django.utils import timezone
+import datetime
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from jobs.models import Application  # <-- Verify this import matches your app!
+
+@login_required
+@require_POST
+def update_application_status(request, app_id):
+    """API endpoint for recruiters to update application statuses."""
+    if not getattr(request.user, 'is_recruiter', False):
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+        
+    try:
+        data = json.loads(request.body)
+        new_status = data.get('status')
+        
+        # Fetch the exact application
+        application = Application.objects.get(id=app_id)
+        application.status = new_status
+        
+        # If scheduling an interview, auto-set the date for 3 days from now
+        if new_status == 'scheduled':
+            application.interview_date = timezone.now() + datetime.timedelta(days=3)
+            
+        application.save()
+        return JsonResponse({'success': True, 'message': 'Status updated'})
+        
+    except Application.DoesNotExist:
+        return JsonResponse({'error': 'Application not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+
+from jobs.models import JobListing # <-- Check that this matches your actual model name!
+
+@login_required
+def post_job_view(request):
+    """Handles rendering the post job form and saving new jobs to the DB."""
+    if not getattr(request.user, 'is_recruiter', False):
+        return redirect('dashboard')
+        
+    if request.method == 'POST':
+        
+        JobListing.objects.create(
+            title=request.POST.get('title'),
+            company_name=request.POST.get('company_name'),
+            
+            # Map the HTML 'location' input to your model's 'work_mode' field
+            work_mode=request.POST.get('location'), 
+            
+            # Map the HTML 'job_type' input to your model's 'employment_type' field
+            employment_type=request.POST.get('job_type'), 
+            
+            # Pass the description
+            description=request.POST.get('description'),
+            
+            # Since your model requires a 'company_type' but our HTML form didn't ask for it, 
+            # we will set a default here so the database doesn't crash!
+            company_type="Technology" 
+        )
+        return redirect('dashboard')
+        
+    # Notice this points to the 'users' folder now!
+    return render(request, 'users/post_jobs.html')

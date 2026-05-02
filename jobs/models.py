@@ -34,6 +34,9 @@ class Application(models.Model):
     cover_letter = models.TextField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     applied_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='pending')
+    interview_date = models.DateTimeField(null=True, blank=True)
+    
 
     class Meta:
         # Prevent a user from applying to the same job twice

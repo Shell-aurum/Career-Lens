@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerLens | Post a New Job</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { DEFAULT: '#0A192F', light: '#112240', lighter: '#233554' },
+            emerald: { DEFAULT: '#1097b9', hover: '#0d7a96' }
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-navy text-gray-200 font-sans antialiased min-h-screen flex flex-col">
+  
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-20">
+        <a href="{% url 'dashboard' %}" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <div class="w-10 h-10 bg-emerald rounded-xl flex items-center justify-center shadow-lg shadow-emerald/20">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          </div>
+          <span class="text-2xl font-bold text-white tracking-tight">CareerLens</span>
+        </a>
+        <div class="hidden md:flex items-center space-x-6">
+          <span class="text-gray-300 font-medium text-sm">Recruiter Portal</span>
+          <a href="{% url 'dashboard' %}" class="bg-navy-lighter border border-white/10 text-gray-300 px-6 py-2 rounded-full font-semibold hover:text-white hover:bg-white/5 transition-all text-sm">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-3xl mx-auto px-4 py-12 w-full">
+    <div class="mb-8">
+      <h1 class="text-4xl font-extrabold text-white mb-2">Create a Job Listing</h1>
+      <p class="text-gray-400 text-lg">Fill out the details below to broadcast this role to the CareerLens talent pool.</p>
+    </div>
+
+    <!-- The Form -->
+    <form action="{% url 'post_job' %}" method="POST" class="bg-navy-light/50 border border-white/10 p-8 rounded-3xl shadow-2xl backdrop-blur-sm space-y-6">
+      {% csrf_token %}
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Job Title -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">Job Title</label>
+          <input type="text" name="title" required placeholder="e.g. Senior Machine Learning Engineer" class="w-full bg-navy border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald focus:ring-1 focus:ring-emerald transition-all outline-none">
+        </div>
+        <!-- Company Name -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">Company Name</label>
+          <input type="text" name="company_name" required placeholder="e.g. Google, TechCorp" class="w-full bg-navy border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald focus:ring-1 focus:ring-emerald transition-all outline-none">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Location -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">Location</label>
+          <input type="text" name="location" required placeholder="e.g. Remote, New York, NY" class="w-full bg-navy border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald focus:ring-1 focus:ring-emerald transition-all outline-none">
+        </div>
+        <!-- Job Type -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-300 mb-2">Employment Type</label>
+          <select name="job_type" class="w-full bg-navy border border-white/10 rounded-xl px-4 py-3 text-white focus:border-emerald focus:ring-1 focus:ring-emerald transition-all outline-none appearance-none">
+            <option value="Full-Time">Full-Time</option>
+            <option value="Part-Time">Part-Time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-300 mb-2">Job Description</label>
+        <textarea name="description" required rows="5" placeholder="Describe the role, responsibilities, and ideal candidate..." class="w-full bg-navy border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:border-emerald focus:ring-1 focus:ring-emerald transition-all outline-none"></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="pt-4 border-t border-white/10">
+        <button type="submit" class="w-full py-4 bg-emerald text-white rounded-xl font-bold text-lg hover:bg-emerald-hover transition-all shadow-lg shadow-emerald/30 flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          Publish Job to Explore Menu
+        </button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

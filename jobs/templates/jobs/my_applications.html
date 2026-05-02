@@ -58,19 +58,34 @@
                             <td class="px-6 py-5 text-gray-300">
                                 {{ app.applied_at|date:"M d, Y" }}
                             </td>
+                           
                             <td class="px-6 py-5">
                                 {% if app.status == 'pending' %}
                                     <span class="px-3 py-1 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Pending Review</span>
+                                    
+                                {% elif app.status == 'approved' %}
+                                    <span class="px-3 py-1 bg-emerald/10 text-emerald border border-emerald/20 rounded-full text-xs font-bold uppercase tracking-wide">Approved</span>
+                                    
+                                {% elif app.status == 'scheduled' %}
+                                    <div class="flex flex-col gap-1 items-start">
+                                        <span class="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Interview Scheduled</span>
+                                        <span class="text-xs text-gray-400 ml-2">For: <span class="text-white">{{ app.interview_date|date:"M d, Y" }}</span></span>
+                                    </div>
+                                    
+                                {% elif app.status == 'rejected' %}
+                                    <span class="px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Not Selected</span>
+                                    
+                                <!-- Kept your original statuses just in case you use them elsewhere! -->
                                 {% elif app.status == 'reviewing' %}
                                     <span class="px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Under Review</span>
                                 {% elif app.status == 'interview' %}
                                     <span class="px-3 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Interviewing</span>
-                                {% elif app.status == 'rejected' %}
-                                    <span class="px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Not Selected</span>
                                 {% elif app.status == 'accepted' %}
                                     <span class="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Offer Extended</span>
                                 {% endif %}
                             </td>
+
+
                         </tr>
                         {% endfor %}
                     </tbody>
