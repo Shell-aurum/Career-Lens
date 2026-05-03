@@ -80,16 +80,18 @@
   </nav>
 
   <!-- Main Content -->
-  <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+  <!-- ... existing head and navbar ... -->
+
+<main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
     
     <div class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
       <div>
         <h1 class="text-4xl font-extrabold text-white mb-2">Talent Pool</h1>
-        <p class="text-gray-400 text-lg">Review applications and schedule interviews with top candidates.</p>
+        <p class="text-gray-400 text-lg">Luna has ranked your candidates by compatibility. Review and manage your hiring pipeline.</p>
       </div>
       <div class="bg-emerald/10 border border-emerald/20 text-emerald px-4 py-2 rounded-lg font-mono text-sm font-bold flex items-center gap-2">
         <div class="w-2 h-2 rounded-full bg-emerald animate-pulse"></div>
-        3 New Applications
+        Live Talent Feed
       </div>
     </div>
 
@@ -97,22 +99,14 @@
     <div id="applicants-container" class="space-y-4">
       <!-- JavaScript will inject the applicant cards here -->
     </div>
+</main>
 
-  </main>
+<!-- ... existing footer ... -->
 
-  <footer class="bg-navy py-12 border-t border-white/5 mt-auto">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 text-xs">
-      © 2024 CareerLens Inc. All rights reserved.
-    </div>
-  </footer>
-
-  <script>
-    // 1. INJECT REAL DATABASE DATA FROM DJANGO
+<script>
     let applicants = JSON.parse('{{ applications_json|safe|escapejs }}');
-
     const container = document.getElementById('applicants-container');
 
-    // 2. Helper to get CSRF token for secure Django POST requests
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -128,12 +122,11 @@
         return cookieValue;
     }
 
-    // 3. Render the UI
     function renderApplicants() {
       container.innerHTML = '';
       
       if (applicants.length === 0) {
-          container.innerHTML = '<p class="text-gray-400 text-center py-10">No applications found in the database yet.</p>';
+          container.innerHTML = '<p class="text-gray-400 text-center py-10">No applications found. Post a job to start seeing talent!</p>';
           return;
       }
 
@@ -141,24 +134,28 @@
         let statusBadge = '';
         let actionButtons = '';
 
-        // UI State Machine
         if (app.status === 'pending') {
           statusBadge = `<span class="px-3 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Pending Review</span>`;
           actionButtons = `
             <button onclick="updateBackendStatus(${app.id}, 'approved')" class="px-4 py-2 bg-emerald text-white text-sm font-bold rounded-lg hover:bg-emerald-hover transition-colors shadow-lg shadow-emerald/20">Approve</button>
-            <button onclick="updateBackendStatus(${app.id}, 'rejected')" class="px-4 py-2 bg-transparent text-gray-400 border border-white/10 text-sm font-bold rounded-lg hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-colors">Decline</button>
+            <button onclick="updateBackendStatus(${app.id}, 'rejected')" class="px-4 py-2 bg-transparent text-gray-500 border border-white/10 text-sm font-bold rounded-lg hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-colors">Decline</button>
           `;
         } else if (app.status === 'approved') {
           statusBadge = `<span class="px-3 py-1 bg-emerald/10 text-emerald border border-emerald/20 rounded-full text-xs font-bold uppercase tracking-wide">Approved</span>`;
           actionButtons = `
             <button onclick="updateBackendStatus(${app.id}, 'scheduled')" class="px-4 py-2 bg-electric text-white text-sm font-bold rounded-lg hover:bg-blue-600 transition-colors shadow-lg shadow-electric/20 flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
               Schedule Interview
             </button>
           `;
         } else if (app.status === 'scheduled') {
-          statusBadge = `<span class="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-1">Interview Scheduled</span>`;
-          actionButtons = `<div class="text-sm text-gray-400 font-medium bg-navy-light px-4 py-2 rounded-lg border border-white/5">Set for: <span class="text-white">${app.interviewDate || 'In 3 Days'}</span></div>`;
+          statusBadge = `<span class="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Interview Scheduled</span>`;
+          // ADDED: Revert/Cancel Button for Scheduled Interviews
+          actionButtons = `
+            <div class="flex flex-col items-end gap-2">
+                <div class="text-[11px] text-gray-500 font-bold uppercase tracking-tighter">Set for: ${app.interviewDate || 'Pending'}</div>
+                <button onclick="updateBackendStatus(${app.id}, 'approved')" class="text-xs font-bold text-red-400 hover:underline">Cancel & Revert</button>
+            </div>
+          `;
         } else if (app.status === 'rejected') {
           statusBadge = `<span class="px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded-full text-xs font-bold uppercase tracking-wide">Declined</span>`;
           actionButtons = `<span class="text-sm text-gray-500 italic">Archived</span>`;
@@ -167,26 +164,25 @@
         const card = `
           <div class="glass-card p-5 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div class="flex items-center gap-5">
-              <div class="w-12 h-12 rounded-full bg-navy-light border border-white/10 flex items-center justify-center text-lg font-bold text-gray-300">
+              <div class="w-12 h-12 rounded-xl bg-navy-lighter flex items-center justify-center text-lg font-bold text-emerald border border-emerald/20 shadow-inner">
                 ${app.name.charAt(0)}
               </div>
               <div>
                 <h3 class="text-lg font-bold text-white">${app.name}</h3>
                 <div class="flex items-center gap-3 mt-1">
-                  <span class="text-sm text-emerald font-medium">${app.role}</span>
-                  <span class="w-1 h-1 rounded-full bg-gray-600"></span>
-                  <span class="text-xs text-gray-400">Applied ${app.date}</span>
+                  <span class="text-sm text-emerald/80 font-medium">${app.role}</span>
+                  <span class="text-xs text-gray-500">Luna Match</span>
                 </div>
               </div>
             </div>
             
             <div class="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end border-t border-white/5 md:border-none pt-4 md:pt-0">
               <div class="flex flex-col items-center mr-4">
-                <span class="text-xs text-gray-500 uppercase tracking-wider font-bold mb-1">AI Match</span>
-                <span class="text-lg font-black text-electric">${app.match}%</span>
+                <span class="text-[10px] text-emerald font-black uppercase tracking-[0.2em] mb-1">Luna Score</span>
+                <span class="text-2xl font-black text-white">${app.match}%</span>
               </div>
               
-              <div class="flex flex-col items-end gap-3 min-w-[140px]">
+              <div class="flex flex-col items-end gap-3 min-w-[160px]">
                 ${statusBadge}
                 <div class="flex gap-2">
                   ${actionButtons}
@@ -199,31 +195,30 @@
       });
     }
 
-    // 4. Send the update to Django Backend!
     window.updateBackendStatus = (id, newStatus) => {
-      // 1. Update UI instantly so it feels fast
       const applicant = applicants.find(a => a.id === id);
-      if (applicant) applicant.status = newStatus;
+      if (applicant) {
+          applicant.status = newStatus;
+          // If cancelling, clear the interview date visually
+          if (newStatus === 'approved') applicant.interviewDate = null;
+      }
       renderApplicants();
 
-      // 2. Send the actual change to the database behind the scenes
       fetch(`/update-status/${id}/`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
-              'X-CSRFToken': getCookie('csrftoken') // Django requires this!
+              'X-CSRFToken': getCookie('csrftoken')
           },
           body: JSON.stringify({ status: newStatus })
       })
       .then(response => response.json())
       .then(data => {
-          if(data.error) console.error("Database error:", data.error);
-          else console.log("Database updated successfully!");
+          if(data.error) console.error("Luna Engine Error:", data.error);
       });
     };
 
-    // Initialize
     document.addEventListener('DOMContentLoaded', renderApplicants);
-  </script>
+</script>
 </body>
 </html>

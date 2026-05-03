@@ -20,7 +20,10 @@ urlpatterns = [
     path('toggle-mode/', views.toggle_user_mode, name='toggle_mode'),
     path('talent-pool/', views.talent_pool_view, name='talent_pool'),
     
-    # Add this new line directly below talent-pool:
     path('update-status/<int:app_id>/', views.update_application_status, name='update_status'),
     path('post-job/', views.post_job_view, name='post_job'),
+
+    # Cancellation route for job applications
+    path('cancel-application/<int:app_id>/', views.cancel_application, name='cancel_application'),
+    path('cancel-interview/<int:app_id>/', views.cancel_interview, name='cancel_interview'),
 ]
