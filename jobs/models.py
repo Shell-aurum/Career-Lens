@@ -1,9 +1,15 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
+from django.conf import settings
 
 User = get_user_model()
 
 class JobListing(models.Model):
+
+    recruiter = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='jobs', null=True)
+    title = models.CharField(max_length=255)
+    
     title = models.CharField(max_length=255)
     company_name = models.CharField(max_length=255)
     company_type = models.CharField(max_length=100, help_text="e.g., IT, AI, Engineering")

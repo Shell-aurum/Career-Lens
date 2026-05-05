@@ -13,6 +13,7 @@ from .models import User, JobSeeker, Recruiter
 from ai_engine.models import Resume
 from jobs.models import JobListing, Application
 
+
 # --- AUTHENTICATION VIEWS ---
 
 def signup_view(request):
@@ -33,7 +34,8 @@ def signup_view(request):
             user.is_recruiter = True
             user.save()
             company_name = request.POST.get('company_name')
-            Recruiter.objects.create(user=user, company_name=company_name, is_premium=False)
+            # FIX: Anyone who signs up as a recruiter is inherently premium
+            Recruiter.objects.create(user=user, company_name=company_name, is_premium=True)
             
         login(request, user)
         return redirect('dashboard')
@@ -63,14 +65,42 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
-    # Fetch user applications to show status on the dashboard
-    user_applications = Application.objects.filter(applicant=request.user).order_by('-id')
-    return render(request, 'users/dashboard.html', {'applications': user_applications})
+    """Renders the main dashboard for both Seekers and Recruiters."""
+    
+    # FIX: Create a persistent flag that checks if they OWN the recruiter profile, 
+    # regardless of which "mode" they are currently viewing.
+    has_premium = hasattr(request.user, 'recruiter') and getattr(request.user.recruiter, 'is_premium', False)
+    
+    context = {
+        'has_premium': has_premium
+    }
+    
+    if getattr(request.user, 'is_recruiter', False):
+        recruiter_jobs = JobListing.objects.filter(recruiter=request.user).order_by('-posted_date')
+        applications = Application.objects.filter(job__recruiter=request.user).order_by('-applied_at')
+        
+        context['recruiter_jobs'] = recruiter_jobs
+        context['applications'] = applications
+    else:
+        applications = Application.objects.filter(applicant=request.user).order_by('-applied_at')
+        context['applications'] = applications
+
+    return render(request, 'users/dashboard.html', context)
 
 @login_required
 def toggle_user_mode(request):
     """Instantly switch between Job Seeker and Recruiter roles."""
     if request.method == 'POST':
+        # FIX: If they are switching TO recruiter mode, guarantee they have a premium profile
+        if not request.user.is_recruiter:
+            recruiter, created = Recruiter.objects.get_or_create(
+                user=request.user,
+                defaults={'company_name': 'Independent Recruiter', 'is_premium': True}
+            )
+            if not recruiter.is_premium:
+                recruiter.is_premium = True
+                recruiter.save()
+
         request.user.is_recruiter = not request.user.is_recruiter
         request.user.save()
     return redirect('dashboard')
@@ -84,8 +114,15 @@ def post_job_view(request):
         return redirect('dashboard')
         
     if request.method == 'POST':
+        title = request.POST.get('title', '')
+
+        if len(title.split()) > 10 or len(title) > 100:
+            messages.error(request, "Job title is too long. Limit it to 10 words.")
+            return render(request, 'users/post_jobs.html')
+            
         JobListing.objects.create(
-            title=request.POST.get('title'),
+            recruiter=request.user,
+            title=title,              
             company_name=request.POST.get('company_name'),
             work_mode=request.POST.get('location'), 
             employment_type=request.POST.get('job_type'), 
@@ -97,11 +134,22 @@ def post_job_view(request):
     return render(request, 'users/post_jobs.html')
 
 @login_required
-def talent_pool_view(request):
-    """ATS Talent Pool view for recruiters."""
+def delete_job(request, job_id):
+    """Allows a recruiter to remove a job post they created."""
     if not getattr(request.user, 'is_recruiter', False):
         return redirect('dashboard')
         
+    job = get_object_or_404(JobListing, id=job_id)
+    job.delete()
+    messages.success(request, f"Job '{job.title}' has been removed.")
+    return redirect('dashboard')
+
+@login_required
+def talent_pool_view(request):
+    """Restricts talent pool access to recruiters only."""
+    if not getattr(request.user, 'is_recruiter', False):
+        return redirect('dashboard')
+
     applications = Application.objects.all().order_by('-id')
     
     apps_data = []
@@ -135,7 +183,7 @@ def update_application_status(request, app_id):
         if new_status == 'scheduled':
             application.interview_date = timezone.now() + datetime.timedelta(days=3)
         elif new_status == 'approved':
-            application.interview_date = None # Clear date if reverted from scheduled
+            application.interview_date = None
             
         application.save()
         return JsonResponse({'success': True})
@@ -170,8 +218,6 @@ def resume_report_view(request, resume_id):
         'word_count': word_count,
         'jobs': jobs
     })
-
-# In users/views.py
 
 @login_required
 def cancel_application(request, app_id):

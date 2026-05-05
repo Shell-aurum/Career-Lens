@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import JobListing, Application
+from django.views.decorators.http import require_POST
 
 @login_required
 def api_get_all_jobs(request):
@@ -31,30 +32,31 @@ def api_get_all_jobs(request):
 
 
 @login_required
-def apply_job_view(request, job_id):
+@require_POST
+def apply_for_job(request, job_id):
+    """API endpoint to handle job applications from Lumina/Explore page."""
     job = get_object_or_404(JobListing, id=job_id)
-
-    if request.method == 'POST':
-        cover_letter = request.POST.get('cover_letter', '')
-        
-        # Check if the user already applied
-        if Application.objects.filter(job=job, applicant=request.user).exists():
-            # In a real app, you'd show this error on the UI. 
-            # For now, redirect back to dashboard.
-            print("User already applied to this job.") 
-            return redirect('dashboard')
-
-        # Save to database
-        Application.objects.create(
-            job=job,
-            applicant=request.user,
-            cover_letter=cover_letter
-        )
-        
-        # Redirect to dashboard upon success
-        return redirect('dashboard')
-
-    return render(request, 'jobs/apply_job.html', {'job': job})
+    
+    # Check if THIS specific user has already applied for THIS specific job
+    already_applied = Application.objects.filter(
+        applicant=request.user, 
+        job=job
+    ).exists()
+    
+    if already_applied:
+        return JsonResponse({
+            'success': False, 
+            'message': 'You have already applied for this position.'
+        }, status=400)
+    
+    # Create the application
+    Application.objects.create(
+        applicant=request.user,
+        job=job,
+        status='pending'
+    )
+    
+    return JsonResponse({'success': True})
 
 @login_required
 def my_applications_view(request):
@@ -63,13 +65,4 @@ def my_applications_view(request):
     applications = Application.objects.filter(applicant=request.user).select_related('job').order_by('-applied_at')
     
     return render(request, 'jobs/my_applications.html', {'applications': applications})
-
-@login_required
-def talent_pool_view(request):
-    """Renders the ATS Talent Pool for recruiters."""
-    # Security check: Kick out anyone who isn't a recruiter
-    if not getattr(request.user, 'is_recruiter', False):
-        return redirect('dashboard')
-        
-    return render(request, 'users/talent.html')
 

@@ -41,7 +41,8 @@
 </head>
 
 <body class="bg-navy text-gray-200 font-sans antialiased min-h-screen flex flex-col">
-  {% csrf_token %} <!-- Hidden token for AJAX applications -->
+  <!-- The CSRF token for the Fetch API -->
+  {% csrf_token %}
 
   <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/80 backdrop-blur-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -64,9 +65,10 @@
   <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
     <div class="mb-12 text-center">
       <h1 class="text-5xl font-extrabold text-white mb-4">Discover Your Future</h1>
-      <p class="text-gray-400 text-lg">Luna has found <span class="text-electric font-bold" id="job-count">...</span> opportunities waiting for you.</p>
+      <p class="text-gray-400 text-lg">Lumina AI has found <span class="text-electric font-bold" id="job-count">...</span> opportunities tailored for you.</p>
     </div>
 
+    <!-- Search and Filters -->
     <div class="mb-12">
       <div class="relative max-w-3xl mx-auto mb-8">
         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
@@ -84,6 +86,7 @@
       </div>
     </div>
 
+    <!-- Grid -->
     <div id="job-listings-grid" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3"></div>
 
     <div id="load-more-container" class="mt-16 text-center">
@@ -95,7 +98,7 @@
 
   <footer class="bg-navy py-12 border-t border-white/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600 text-xs uppercase tracking-widest">
-      © 2026 CareerLens Inc. Powered by Luna AI
+      © 2026 CareerLens Inc. Powered by Lumina AI
     </div>
   </footer>
 
@@ -106,10 +109,26 @@
     let currentSearchQuery = "";
     let currentCategory = "All";
 
+    // ── Helper: Get CSRF Token from Cookie ──────────────────────────────
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
     // ── Database Fetch ──────────────────────────────────────────────────
     async function fetchJobsFromDatabase() {
       const gridContainer = document.getElementById('job-listings-grid');
-      gridContainer.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500 animate-pulse">Consulting the database...</div>`;
+      gridContainer.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500 animate-pulse">Consulting Lumina's database...</div>`;
       
       try {
         const response = await fetch('/jobs/api/all/');
@@ -121,21 +140,23 @@
           filterAndRenderJobs();
         }
       } catch (error) {
-        gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-red-400">Error connecting to the talent engine.</div>`;
+        gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-red-400 font-bold">Failed to connect to the talent engine.</div>`;
       }
     }
 
-    // ── Application Method (Luna Integration) ──────────────────────────
     async function applyForJob(jobId, btnElement) {
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const csrftoken = getCookie('csrftoken');
         const originalText = btnElement.innerText;
         
         btnElement.disabled = true;
-        btnElement.innerText = "Applying...";
+        btnElement.innerText = "Transmitting...";
         btnElement.classList.add('opacity-50', 'cursor-not-allowed');
 
         try {
-            const response = await fetch(`/apply/${jobId}/`, {
+            // CRITICAL FIX: The URL must exactly match your urls.py path.
+            // If your main urls.py includes 'jobs/' and jobs/urls.py has '<int:job_id>/apply/',
+            // the full path is: /jobs/1/apply/
+            const response = await fetch(`/jobs/${jobId}/apply/`, { 
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': csrftoken,
@@ -143,19 +164,27 @@
                 }
             });
 
+            const data = await response.json();
+
             if (response.ok) {
                 btnElement.innerText = "✓ Applied";
-                btnElement.classList.replace('bg-electric', 'bg-green-500');
-                // Optional: Alert from Luna
-                alert("Luna: Great choice! Your application has been sent to the recruiter.");
+                btnElement.classList.remove('bg-electric', 'hover:bg-blue-600');
+                btnElement.classList.add('bg-green-600', 'cursor-default');
+                btnElement.disabled = true;
+                alert("Lumina: Application successfully submitted to the recruiter!");
             } else {
-                alert("You've already applied for this role!");
+                alert(data.message || "You've already applied for this role!");
                 btnElement.innerText = originalText;
                 btnElement.disabled = false;
                 btnElement.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         } catch (error) {
-            console.error("Application failed", error);
+            console.error("Lumina: Application transmission failed.", error);
+            // This is the error you were seeing. It means the fetch failed completely (e.g., 404 Not Found)
+            alert("Lumina: Encountered a network error. Check the console for details.");
+            btnElement.disabled = false;
+            btnElement.innerText = originalText;
+            btnElement.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     }
 
@@ -175,17 +204,17 @@
       const jobsToRender = filteredJobs.slice(0, currentlyDisplayed);
 
       if (jobsToRender.length === 0) {
-        gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500">No matches found. Try broadening your search!</div>`;
+        gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500">No matches found. Broaden your search criteria!</div>`;
       } else {
         jobsToRender.forEach(job => {
           const cardHTML = `
-            <div class="glass-card rounded-3xl p-8 flex flex-col h-full">
+            <div class="glass-card rounded-3xl p-8 flex flex-col h-full relative overflow-hidden">
               <div class="flex justify-between items-start mb-6">
                 <div>
                   <span class="text-xs font-bold text-electric uppercase tracking-widest">${job.company}</span>
                   <h3 class="text-2xl font-extrabold text-white mt-2">${job.title}</h3>
                 </div>
-                <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-electric font-black text-xl">
+                <div class="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-electric font-black text-xl shadow-inner">
                   ${job.company.substring(0,2).toUpperCase()}
                 </div>
               </div>
@@ -198,7 +227,7 @@
               <p class="text-gray-400 text-sm leading-relaxed mb-8 line-clamp-3">${job.desc}</p>
 
               <div class="mt-auto pt-6 border-t border-white/10 flex items-center justify-between">
-                <span class="text-xs font-medium text-gray-500">Posted Recently</span>
+                <span class="text-xs font-medium text-gray-500">Match score available in report</span>
                 <button onclick="applyForJob(${job.id}, this)" class="px-8 py-3 bg-electric text-white font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg shadow-electric/20">
                   Apply Now
                 </button>

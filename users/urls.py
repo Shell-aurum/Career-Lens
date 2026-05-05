@@ -26,4 +26,7 @@ urlpatterns = [
     # Cancellation route for job applications
     path('cancel-application/<int:app_id>/', views.cancel_application, name='cancel_application'),
     path('cancel-interview/<int:app_id>/', views.cancel_interview, name='cancel_interview'),
+
+    #cancel job post
+    path('job/<int:job_id>/delete/', views.delete_job, name='delete_job'),
 ]

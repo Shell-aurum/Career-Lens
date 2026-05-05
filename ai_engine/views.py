@@ -160,12 +160,3 @@ def ask_rag_chatbot(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
-
-@login_required
-def talent_pool_view(request):
-    """Renders the ATS Talent Pool for recruiters."""
-    # Security check: Kick out anyone who isn't a recruiter
-    if not getattr(request.user, 'is_recruiter', False):
-        return redirect('dashboard')
-        
-    return render(request, 'users/talent.html')
